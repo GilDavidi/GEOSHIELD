@@ -84,10 +84,10 @@ async def main(phone):
     my_channel = await client.get_entity(entity)
 
     # Calculate the datetime for 48 hours ago
-    time_threshold = datetime.now() - timedelta(hours=6)
+    time_threshold = datetime.now() - timedelta(hours=48)
 
     offset_id = 0
-    limit = 100  # Set a reasonable value for limit
+    limit = 1
     all_messages = []
     total_messages = 0
     total_count_limit = 0
@@ -108,7 +108,16 @@ async def main(phone):
             break
         messages = history.messages
         for message in messages:
-            all_messages.append(message.to_dict())
+            # Create a copy of the original message dictionary
+            message_dict = message.to_dict().copy()
+
+            # Check if the "media" key exists and remove it
+            if 'media' in message_dict:
+                del message_dict['media']
+
+            # Append the modified message dictionary to all_messages
+            all_messages.append(message_dict)
+
         offset_id = messages[len(messages) - 1].id
         total_messages = len(all_messages)
         if total_count_limit != 0 and total_messages >= total_count_limit:
@@ -116,6 +125,7 @@ async def main(phone):
 
     with open('channel_messages.json', 'w') as outfile:
         json.dump(all_messages, outfile, cls=DateTimeEncoder)
+
 
     # Check locations using Geopy and store in a dictionary
     locations_dict = {}
@@ -130,13 +140,6 @@ async def main(phone):
         print('//////////')
         i = i+1
         print(i)
-
-
-
-
-    # Save locations dictionary to a JSON file
-    with open('message_locations.json', 'w') as loc_file:
-        json.dump(locations_dict, loc_file)
 
     # Check for security issues and classify messages
     classified_messages = []
