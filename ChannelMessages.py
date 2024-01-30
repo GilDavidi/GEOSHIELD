@@ -1,7 +1,10 @@
 import configparser
 import json
 import asyncio
-from datetime import date, datetime
+import re
+import spacy
+nlp = spacy.load('en_core_web_sm')
+from datetime import datetime, timedelta
 
 from telethon import TelegramClient
 from telethon.errors import SessionPasswordNeededError
@@ -9,6 +12,25 @@ from telethon.tl.functions.messages import (GetHistoryRequest)
 from telethon.tl.types import (
     PeerChannel
 )
+
+# Function to classify security issues based on keywords
+def classify_security_issue(text):
+    # Define keywords related to security issues
+    terrorism_keywords = ['terrorism', 'terrorist', 'attack', 'bombing']
+    antisemitism_keywords = ['antisemitism', 'anti-semitism', 'hate speech']
+    war_keywords = ['war', 'conflict', 'battle', 'armed','strikes','strike']
+
+    # Combine all keywords into a single pattern
+    security_pattern = '|'.join(map(re.escape, terrorism_keywords + antisemitism_keywords + war_keywords))
+
+    # Case-insensitive pattern matching
+    pattern = re.compile(security_pattern, re.IGNORECASE)
+
+    # Check if the text contains any security-related keywords
+    if pattern.search(text):
+        return 'Security Issue'
+    else:
+        return 'No Security Issue'
 
 
 # some functions to parse json date
@@ -61,8 +83,11 @@ async def main(phone):
 
     my_channel = await client.get_entity(entity)
 
+    # Calculate the datetime for 48 hours ago
+    time_threshold = datetime.now() - timedelta(hours=6)
+
     offset_id = 0
-    limit = 5
+    limit = 100  # Set a reasonable value for limit
     all_messages = []
     total_messages = 0
     total_count_limit = 0
@@ -72,7 +97,7 @@ async def main(phone):
         history = await client(GetHistoryRequest(
             peer=my_channel,
             offset_id=0,
-            offset_date=None,
+            offset_date=int(time_threshold.timestamp()),  # Set the timestamp for 48 hours ago
             add_offset=0,
             limit=limit,
             max_id=offset_id,
@@ -91,6 +116,42 @@ async def main(phone):
 
     with open('channel_messages.json', 'w') as outfile:
         json.dump(all_messages, outfile, cls=DateTimeEncoder)
+
+    # Check locations using Geopy and store in a dictionary
+    locations_dict = {}
+    i = 0
+    for message in all_messages:
+        sample_text = message.get('message', '')
+        doc = nlp(sample_text)
+
+        for entity in doc.ents:
+            if entity.label_ == 'GPE':
+                print(entity.text)
+        print('//////////')
+        i = i+1
+        print(i)
+
+
+
+
+    # Save locations dictionary to a JSON file
+    with open('message_locations.json', 'w') as loc_file:
+        json.dump(locations_dict, loc_file)
+
+    # Check for security issues and classify messages
+    classified_messages = []
+    for message in all_messages:
+        text = message.get('message', '')
+        # print(text)
+        is_security_issue = classify_security_issue(text)
+        classified_messages.append({
+            'id': message['id'],
+            'classification': is_security_issue
+        })
+
+    # Save classified messages to a JSON file
+    with open('classified_messages.json', 'w') as classified_file:
+        json.dump(classified_messages, classified_file)
 
 with client:
     client.loop.run_until_complete(main(phone))
