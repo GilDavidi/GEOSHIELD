@@ -17,21 +17,23 @@ keywords_file_path = 'security_keywords.json'
 
 # Function to classify security issues based on keywords
 def classify_security_issue(text, keywords_file_path):
-    # Read the keywords from the JSON file
-    with open(keywords_file_path, 'r') as json_file:
-        loaded_keywords = json.load(json_file)
+    with open(keywords_file_path, 'r') as keywords_file:
+        security_keywords = json.load(keywords_file)
 
     # Combine all keywords into a single pattern
-    security_pattern = '|'.join(map(re.escape, loaded_keywords))
+    security_pattern = '|'.join(map(re.escape, security_keywords))
 
     # Case-insensitive pattern matching
     pattern = re.compile(security_pattern, re.IGNORECASE)
 
+    # Find all keywords in the text
+    detected_keywords = pattern.findall(text)
+
     # Check if the text contains any security-related keywords
-    if pattern.search(text):
-        return 'Security Issue'
+    if detected_keywords:
+        return 'Security Issue', detected_keywords
     else:
-        return 'No Security Issue'
+        return 'No Security Issue', []
 
 
 # some functions to parse json date
@@ -143,18 +145,20 @@ async def main(phone):
 
     # Check for security issues and classify messages
     classified_messages = []
+
     for message in all_messages:
         text = message.get('message', '')
         # print(text)
-        is_security_issue = classify_security_issue(text,keywords_file_path)
+        classification, detected_keywords = classify_security_issue(text, keywords_file_path)
         classified_messages.append({
             'id': message['id'],
-            'classification': is_security_issue
+            'classification': classification,
+            'detected_keywords': detected_keywords
         })
 
     # Save classified messages to a JSON file
     with open('classified_messages.json', 'w') as classified_file:
-        json.dump(classified_messages, classified_file)
+        json.dump(classified_messages, classified_file, indent=2)
 
 with client:
     client.loop.run_until_complete(main(phone))
