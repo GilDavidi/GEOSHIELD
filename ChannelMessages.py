@@ -13,15 +13,16 @@ from telethon.tl.types import (
     PeerChannel
 )
 
+keywords_file_path = 'security_keywords.json'
+
 # Function to classify security issues based on keywords
-def classify_security_issue(text):
-    # Define keywords related to security issues
-    terrorism_keywords = ['terrorism', 'terrorist', 'attack', 'bombing']
-    antisemitism_keywords = ['antisemitism', 'anti-semitism', 'hate speech']
-    war_keywords = ['war', 'conflict', 'battle', 'armed','strikes','strike']
+def classify_security_issue(text, keywords_file_path):
+    # Read the keywords from the JSON file
+    with open(keywords_file_path, 'r') as json_file:
+        loaded_keywords = json.load(json_file)
 
     # Combine all keywords into a single pattern
-    security_pattern = '|'.join(map(re.escape, terrorism_keywords + antisemitism_keywords + war_keywords))
+    security_pattern = '|'.join(map(re.escape, loaded_keywords))
 
     # Case-insensitive pattern matching
     pattern = re.compile(security_pattern, re.IGNORECASE)
@@ -87,7 +88,7 @@ async def main(phone):
     time_threshold = datetime.now() - timedelta(hours=48)
 
     offset_id = 0
-    limit = 1
+    limit = 30
     all_messages = []
     total_messages = 0
     total_count_limit = 0
@@ -128,7 +129,6 @@ async def main(phone):
 
 
     # Check locations using Geopy and store in a dictionary
-    locations_dict = {}
     i = 0
     for message in all_messages:
         sample_text = message.get('message', '')
@@ -146,7 +146,7 @@ async def main(phone):
     for message in all_messages:
         text = message.get('message', '')
         # print(text)
-        is_security_issue = classify_security_issue(text)
+        is_security_issue = classify_security_issue(text,keywords_file_path)
         classified_messages.append({
             'id': message['id'],
             'classification': is_security_issue
