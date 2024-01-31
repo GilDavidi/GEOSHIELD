@@ -14,6 +14,7 @@ security_keywords = [
     "soldier"
 ]
 
+
 # Get the current time and the time 72 hours ago
 current_time = datetime.utcnow()
 time_72_hours_ago = current_time - timedelta(hours=72)
