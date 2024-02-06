@@ -1,130 +1,70 @@
+import os
+import glob
 import requests
-from datetime import datetime, timedelta
-from bs4 import BeautifulSoup
-import re
-import json
+from io import BytesIO
+import zipfile
+import pandas as pd
 
-# Define the base URL for the GDELT API
-gdelt_api_url = "https://api.gdeltproject.org/api/v2/doc/doc"
-
-# Define the keyword banks
-security_keywords = [
-    "haifa",
-    "attack",
-    "soldier"
-]
-
-# Get the current time and the time 72 hours ago
-current_time = datetime.utcnow()
-time_72_hours_ago = current_time - timedelta(hours=72)
-
-# Format the time strings for the API query
-start_time = time_72_hours_ago.strftime("%Y%m%d%H%M%S")
-end_time = current_time.strftime("%Y%m%d%H%M%S")
-
-# Function to make API request
-def make_gdelt_request(keywords):
-    # Join the keywords with spaces for the API query
-    keyword_query = ' '.join(keywords)
-
-    # Define other parameters for the API query
-    params = {
-        'format': 'html',
-        'timespan': '72H',
-        'query': f'{keyword_query} sourcelang:eng',
-        'mode': 'artlist',
-        'maxrecords': '3',  # Reduce to 3 for demonstration purposes
-        'sort': 'hybridrel'
-    }
-
-    # Print the URL before making the request
-    url = gdelt_api_url + '?' + '&'.join([f'{key}={value}' for key, value in params.items()])
-    print("API Request URL:", url)
-
-    # Make the API request
-    response = requests.get(gdelt_api_url, params=params)
-
-    # Check if the request was successful (status code 200)
-    if response.status_code == 200:
-        # Get the HTML content from the response
-        html_content = response.text
-        soup = BeautifulSoup(html_content, 'html.parser')
-
-        # Extract and print details of each article
-        articles = soup.find_all('div', class_='gkg_article')
-        for idx, article in enumerate(articles, 1):
-            print(f"\nArticle {idx} Details:")
-            print("Title:", article.find('div', class_='gkg_title').get_text(strip=True))
-            print("URL:", article.find('div', class_='gkg_url').get_text(strip=True))
-            print("Summary:", article.find('div', class_='gkg_summary').get_text(strip=True))
-
-            # Visit the article URL and extract text content
-            article_url = article.find('div', class_='gkg_url').get_text(strip=True)
-            article_text = get_article_text(article_url)
-            print("Text:", article_text)
-
-        return html_content
-    else:
-        # Print an error message if the request was not successful
-        print(f"Error: {response.status_code}")
-        return None
-
-# Function to visit article URL and extract text content
-def get_article_text(url):
+# Function to download and extract GDELT files
+def download_and_extract(url, output_folder):
     response = requests.get(url)
     if response.status_code == 200:
-        article_soup = BeautifulSoup(response.text, 'html.parser')
-        # Extract text content and clean unnecessary spaces and line breaks
-        article_text = ' '.join(article_soup.stripped_strings)
-        return article_text
+        with zipfile.ZipFile(BytesIO(response.content)) as zip_file:
+            zip_file.extractall(output_folder)
+        print(f"Download and extraction successful for: {url}")
     else:
-        print(f"Error fetching article content from {url}")
-        return "N/A"
+        print(f"Failed to download and extract: {url}")
 
-# Function to save articles to a JSON file
-def save_articles_to_json(articles, source):
-    article_list = []
-    for i, article in enumerate(articles):
-        title = article.select_one('span.arttitle').text.strip()
+# Specify the GDELT master file list URL
+gdelt_masterfile_url = "http://data.gdeltproject.org/gdeltv2/masterfilelist.txt"
 
-        # Extract date using the script content
-        date_script = soup.find('script', string=re.compile(r'sourceinfo_date_' + str(i)))
-        date_match = re.search(r"'(\d{2}/\d{2}/\d{4} \d{2}:\d{2} UTC)'", date_script.string)
-        date_str = date_match.group(1) if date_match else "N/A"
+# Make a GET request to the GDELT master file list URL
+response = requests.get(gdelt_masterfile_url)
 
-        # Convert the date to the desired format
-        article_date = datetime.strptime(date_str, "%m/%d/%Y %H:%M UTC").strftime("%Y-%m-%dT%H:%M:%S+00:00")
+# Check if the request was successful (status code 200)
+if response.status_code == 200:
+    # Get the last 60 lines of the text file
+    lines = response.text.strip().split('\n')[-60:]
 
-        # Extract the URL from the 'A' tag outside the 'div'
-        article_url = article['href'] if article['href'] else "N/A"
+    # Extract the URLs from the last 60 lines
+    zip_urls = [line.split(' ')[-1] for line in lines]
 
-        # Get the text content of the article
-        article_text = get_article_text(article_url)
+    # Specify the folder for extracted files
+    extraction_folder = "extracted_files"
 
-        # Build the article dictionary
-        article_dict = {
-            "title": title,
-            "date": article_date,
-            "url": article_url,
-            "source": source,
-            "text": article_text
-        }
+    # Download and extract the last 60 zip files
+    for zip_url in zip_urls:
+        download_and_extract(zip_url, extraction_folder)
 
-        # Append the article dictionary to the list
-        article_list.append(article_dict)
+    ####################################################################################################
 
-    # Save the article list to a JSON file
-    with open('gdelt_articles.json', 'w') as json_file:
-        json.dump(article_list, json_file, indent=2)
-    print("Articles saved to gdelt_articles.json")
+    # Continue with the code to merge and organize exported CSV files
 
-# Perform three separate requests for each word bank
-terrorism_html = make_gdelt_request(security_keywords)
+    # Specify the path where your exported CSV files are located
+    path_exported_files = "extracted_files"
 
-# Extract articles from the HTML content
-html_content = terrorism_html
-soup = BeautifulSoup(html_content, 'html.parser')
-articles = soup.select('div[id^="maincontent"] > table > a')
+    # Use glob to find all CSV files ending with "export"
+    exported_files = glob.glob(os.path.join(path_exported_files, "*.export.CSV"))
 
-# Save articles to JSON file
-save_articles_to_json(articles, source="GDELT")
+    # Check if there are any exported files
+    if not exported_files:
+        print("No exported files found.")
+    else:
+        # Print the number of files before concatenation
+        print(f"Number of files before concatenation: {len(exported_files)}")
+
+        # Load each exported file into a DataFrame
+        all_exported_data = [pd.read_csv(file) for file in exported_files]
+
+        # Concatenate all DataFrames into one
+        unified_exported_data = pd.concat(all_exported_data, ignore_index=True)
+
+        # Add column names if needed (replace colnames with your specific column names)
+        colnames = [...]
+
+        # Save the merged and organized data to a new CSV file in the extraction folder
+        unified_exported_data.to_csv(os.path.join(extraction_folder, "unified_exported_data.csv"), index=False)
+        print("Merged and organized data saved to unified_exported_data.csv in the extraction folder.")
+
+else:
+    print(f"Failed to fetch masterfilelist. Status code: {response.status_code}")

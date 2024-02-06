@@ -2,16 +2,29 @@ import requests
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import re
+import os
 import json
+
+
+# Assuming the current script is in a folder (current_folder) and the JSON file is in the parent folder
+current_folder = os.path.dirname(__file__)
+parent_folder = os.path.abspath(os.path.join(current_folder, '..'))
+
+# Specify the JSON file name
+json_file_name = 'security_keywords.json'
+
+# Construct the full path to the JSON file
+keywords_file_path = os.path.join(parent_folder, json_file_name)
 
 # Define the base URL for the GDELT API
 gdelt_api_url = "https://api.gdeltproject.org/api/v2/doc/doc"
 
 # Define the keyword banks
 security_keywords = [
-    "Haifa",
-    "soldier",
-    "attack",
+    'terrorism',
+    'terrorist',
+    'attack' ,
+    'bombing'
 ]
 
 # Get the current time and the time 72 hours ago
@@ -29,11 +42,10 @@ def make_gdelt_request(keywords):
 
     # Define other parameters for the API query
     params = {
-        'format': 'html',
+        'format': 'JSON',
         'timespan': '72H',
         'query': f'{keyword_query} sourcelang:eng',
         'mode': 'artlist',
-        'maxrecords': '3',  # Reduce to 3 for demonstration purposes
         'sort': 'hybridrel'
     }
 
@@ -62,6 +74,8 @@ def make_gdelt_request(keywords):
             article_url = article.find('div', class_='gkg_url').get_text(strip=True)
             article_text = get_article_text(article_url)
             print("Text:", article_text)
+            # Classify security issues for GDELT articles
+            classification, detected_keywords = classify_security_issue(article_text, keywords_file_path)
 
         return html_content
     else:
@@ -82,49 +96,80 @@ def get_article_text(url):
         return "N/A"
 
 # Function to save articles to a JSON file
-def save_articles_to_json(articles, source):
-    article_list = []
-    for i, article in enumerate(articles):
-        title = article.select_one('span.arttitle').text.strip()
-
-        # Extract date using the script content
-        date_script = soup.find('script', string=re.compile(r'sourceinfo_date_' + str(i)))
-        date_match = re.search(r"'(\d{2}/\d{2}/\d{4} \d{2}:\d{2} UTC)'", date_script.string)
-        date_str = date_match.group(1) if date_match else "N/A"
-
-        # Convert the date to the desired format
-        article_date = datetime.strptime(date_str, "%m/%d/%Y %H:%M UTC").strftime("%Y-%m-%dT%H:%M:%S+00:00")
-
-        # Extract the URL from the 'A' tag outside the 'div'
-        article_url = article['href'] if article['href'] else "N/A"
-
-        # Get the text content of the article
+def save_articles_to_json(article_list, source):
+    output_articles = []
+    for article in article_list:
+        article_title = article['title']
+        article_url = article['url']
+        article_date = datetime.strptime(article['seendate'], "%Y%m%dT%H%M%SZ").strftime("%Y-%m-%dT%H:%M:%S+00:00")
         article_text = get_article_text(article_url)
 
-        # Build the article dictionary
         article_dict = {
-            "title": title,
+            "title": article_title,
             "date": article_date,
             "url": article_url,
             "source": source,
             "text": article_text
         }
 
-        # Append the article dictionary to the list
-        article_list.append(article_dict)
+        output_articles.append(article_dict)
 
-    # Save the article list to a JSON file
     with open('gdelt_articles.json', 'w') as json_file:
-        json.dump(article_list, json_file, indent=2)
+        json.dump(output_articles, json_file, indent=2)
     print("Articles saved to gdelt_articles.json")
+    return output_articles
 
-# Perform three separate requests for each word bank
-terrorism_html = make_gdelt_request(security_keywords)
 
-# Extract articles from the HTML content
-html_content = terrorism_html
-soup = BeautifulSoup(html_content, 'html.parser')
-articles = soup.select('div[id^="maincontent"] > table > a')
+def classify_security_issue(text, keywords_file_path):
+    with open(keywords_file_path, 'r') as keywords_file:
+        security_keywords = json.load(keywords_file)
 
-# Save articles to JSON file
-save_articles_to_json(articles, source="GDELT")
+    # Combine all keywords into a single pattern
+    security_pattern = '|'.join(map(re.escape, security_keywords))
+
+    # Case-insensitive pattern matching
+    pattern = re.compile(security_pattern, re.IGNORECASE)
+
+    # Find all keywords in the text
+    detected_keywords = pattern.findall(text)
+
+    # Check if the text contains any security-related keywords
+    if detected_keywords:
+        return 'Security Issue', detected_keywords
+    else:
+        return 'No Security Issue', []
+
+# Function to classify security issues for GDELT articles
+def classify_gdelt_articles(article_list, keywords_file_path):
+    classified_messages = []
+
+    for idx, article in enumerate(article_list):
+        # Extract details from GDELT article based on HTML structure
+        article_title = article.get('title', '')  # Replace with the actual key for title
+        article_url = article.get('url', '')  # Replace with the actual key for URL
+        article_text = get_article_text(article_url)  # Assuming get_article_text is defined
+
+        # Classify security issues for GDELT articles
+        classification, detected_keywords = classify_security_issue(article_text, keywords_file_path)
+
+        classified_messages.append({
+            'id': article_title,  # Use title instead of ID
+            'classification': classification,
+            'detected_keywords': detected_keywords
+        })
+
+    return classified_messages
+
+# Perform the request to GDELT API
+terrorism_json_string = make_gdelt_request(security_keywords)
+terrorism_json = json.loads(terrorism_json_string)
+
+# Extract articles from the JSON response
+article_list = save_articles_to_json(terrorism_json['articles'], source="GDELT")
+
+# Classify GDELT articles for security issues
+gdelt_classified_messages = classify_gdelt_articles(article_list, keywords_file_path)
+
+# Save GDELT classified messages to a JSON file
+with open('classified_messages.json', 'w') as classified_file:
+    json.dump(gdelt_classified_messages, classified_file, indent=2)
