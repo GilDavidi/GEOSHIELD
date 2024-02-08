@@ -2,23 +2,23 @@ import requests
 from datetime import datetime, timedelta
 from html_parser import get_article_text
 import re
-import os
 import json
 
-
-# Assuming the current script is in a folder (current_folder) and the JSON file is in the parent folder
-current_folder = os.path.dirname(__file__)
-parent_folder = os.path.abspath(os.path.join(current_folder, '..'))
-
-# Specify the JSON file name
-json_file_name = 'security_keywords.json'
-
-# Construct the full path to the JSON file
-keywords_file_path = os.path.join(parent_folder, json_file_name)
 
 # Define the base URL for the GDELT API
 gdelt_api_url = "https://api.gdeltproject.org/api/v2/doc/doc"
 
+# Define the keyword banks
+security_keywords = [
+    'killed',
+    'strike',
+    'bombing',
+    'attack',
+    'terrorism',
+    'terrorist',
+    'war',
+    'battle'
+]
 
 # Get the current time and the time 72 hours ago
 current_time = datetime.utcnow()
@@ -29,22 +29,17 @@ start_time = time_72_hours_ago.strftime("%Y%m%d%H%M%S")
 end_time = current_time.strftime("%Y%m%d%H%M%S")
 
 # Function to make API request
-# Function to make API request
-def make_gdelt_request(topics):
-    # Encode each theme with the correct format
-    encoded_topics = [f'theme:{topic}' for topic in topics]
-
-    # Join the encoded themes with spaces for the API query
-    topic_query = '%20'.join(encoded_topics)
+def make_gdelt_request(keywords):
+    keyword_query = ' or '.join(keywords)
 
     # Define other parameters for the API query
     params = {
         'format': 'JSON',
         'timespan': '24H',
-        'query': f'{topic_query} sourcelang:eng',
+        'query': f'({keyword_query})  sourcelang:eng',
         'mode': 'artlist',
         'maxrecords': 75,
-        'sort': 'datedesc'
+        'sort': 'hybridrel'
     }
 
     # Construct the full URL
@@ -64,10 +59,11 @@ def make_gdelt_request(topics):
         return None
 
 
-
 # Function to save articles to a JSON file
 def save_articles_to_json(article_list, source):
     output_articles = []
+    article_id = 1  # Initialize article id
+
     for article in article_list:
         article_title = article['title']
         article_url = article['url']
@@ -75,14 +71,16 @@ def save_articles_to_json(article_list, source):
         article_text = get_article_text(article_url)
 
         article_dict = {
+            "id": article_id,
             "title": article_title,
             "date": article_date,
             "url": article_url,
             "source": source,
-            "text": article_text
+            "message": article_text
         }
 
         output_articles.append(article_dict)
+        article_id += 1  # Increment article id
 
     with open('gdelt_articles.json', 'w') as json_file:
         json.dump(output_articles, json_file, indent=2)
@@ -130,17 +128,9 @@ def classify_gdelt_articles(article_list, keywords_file_path):
     return classified_messages
 
 
-# Perform the request to GDELT API with topics TERROR and KILL
-topics = ['TERROR']
-terrorism_json = make_gdelt_request(topics)
+terrorism_json = make_gdelt_request(security_keywords)
 
 # Extract articles from the JSON response
 article_list = save_articles_to_json(terrorism_json['articles'], source="GDELT")
 
 
-# Classify GDELT articles for security issues
-#gdelt_classified_messages = classify_gdelt_articles(article_list, keywords_file_path)
-
-# Save GDELT classified messages to a JSON file
-#with open('classified_messages.json', 'w') as classified_file:
-#    json.dump(gdelt_classified_messages, classified_file, indent=2)
