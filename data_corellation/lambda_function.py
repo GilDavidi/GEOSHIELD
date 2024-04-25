@@ -31,7 +31,7 @@ def find_matching_messages(telegram_messages, gdelt_messages):
                     jaccard_sim = jaccard_similarity(telegram_text , gdelt_text)
                     
                     # Decide if there is a match based on some threshold
-                    if jaccard_sim > 0.1 and levenshtein_sim > 0.1:
+                    if jaccard_sim > 0.15 and levenshtein_sim > 0.25:
                         matching_messages.append({
                             "Telegram_id": telegram_message.get('id'),
                             "GDELT_id": gdelt_message.get('id'),
