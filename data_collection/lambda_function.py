@@ -10,7 +10,7 @@ def lambda_handler(event, context):
         
         # Check if 'category' parameter exists
         if category:
-            print("Category:", category)
+            print("New Data Collection request with category:", category)
         else:
             return {
                 'statusCode': 400,
