@@ -1,65 +1,40 @@
 import json
+import concurrent.futures
 import boto3
-from concurrent.futures import ThreadPoolExecutor
-from spacy.lang.en import English
+from g4f.client import Client
 
-# Load English tokenizer
-nlp = English()
+def generate_text(message, question):
+    client = Client()
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": question + message}]
+    )
+    return response.choices[0].message.content
 
-def extract_locations(file_name, bucket_name, messages, output_bucket_name, output_key, batch_size=100):
-    # Initialize Boto3 clients for S3 and Comprehend
-    s3 = boto3.client('s3')
-    comprehend = boto3.client('comprehend')
-    
-    # Define function to perform Comprehend analysis for a batch of messages
-    def process_batch(batch):
-        classified_messages = []
-        for message in batch:
-            text = message['message'].strip()  # Remove leading/trailing whitespace
-            if text:  # Check if the message is not empty
-                # Perform entity recognition
-                entities_response = comprehend.detect_entities(Text=text, LanguageCode='en')
-                entities = entities_response['Entities']
-                # Extract locations mentioned in the text
-                locations = [entity['Text'] for entity in entities if entity['Type'] == 'LOCATION']
-                # Extract primary location (for simplicity, just take the first location mention)
-                primary_location = locations[0] if locations else None
-                # Add location to the existing fields in the message
-                message['location'] = primary_location
-                classified_messages.append(message)
-        return classified_messages
-    
-    # Split messages into batches
-    batches = [messages[i:i+batch_size] for i in range(0, len(messages), batch_size)]
-    
-    # Process batches concurrently using a ThreadPoolExecutor
-    with ThreadPoolExecutor() as executor:
-        classified_results = list(executor.map(process_batch, batches))
-    
-    # Flatten the list of classified results
-    classified_messages = [msg for batch_result in classified_results for msg in batch_result]
-    
-    # Convert classified messages to JSON string
-    locations_json = json.dumps(classified_messages)
-    
-
-
-    
-    return classified_messages
-    
-    
+def process_message(message):
+    text_to_check = "\u6d41\u91cf\u5f02\u5e38" 
+    if message["message"]:
+        location = None
+        
+        location_question = "Based on the information provided in the text, please identify the primary location where the main event is taking place. Choose only one location that accurately represents the central focus of the event (only answer like: Tel Aviv). If you cannot determine a specific location, please indicate null."
+        while not location or location.startswith(text_to_check):
+            location = generate_text(message["message"], location_question)
+        
+        if location is not None:
+            message["location"] = str(location)
+    return message
 
 def lambda_handler(event, context):
     try:
         file_name = event['file_name']
         print("extract location " + file_name + " start")
-        result = extract_locations(
-                file_name=file_name,    
-                bucket_name='classified-data-geoshield',
-                messages= event['messages'],
-                output_bucket_name='classified-data-geoshield',
-                output_key='telegram_classified_messages.json'
-            )
+        
+        # Process messages
+        messages = event['messages']
+        max_workers = 10
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            processed_messages = list(executor.map(process_message, messages))
+            
         # Invoke another Lambda function to process the results
         lambda_client = boto3.client('lambda')
         invoke_response = lambda_client.invoke(
@@ -67,14 +42,15 @@ def lambda_handler(event, context):
             InvocationType='RequestResponse',
             Payload=json.dumps({
                 "file_name": file_name,
-                "messages": result
+                "messages": processed_messages
             })
         )
-
+        
         print("extract location " + file_name + " end")
+        
         return {
             "statusCode": 200,
-            "body": json.dumps({"message": "Successfully sent to data_extract_events"})
+            "body": json.dumps({"messages": processed_messages})
         }
 
     except Exception as e:

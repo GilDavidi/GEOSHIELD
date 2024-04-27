@@ -42,7 +42,7 @@ def lambda_handler(event, context):
             # Generate a unique ID for each message
             unique_id = str(uuid.uuid4())  
             # Extracting and formatting the date to include only date and hour
-            date_str = message['date'].strftime("%Y-%m-%d %H:00")
+            date_str = message['date'].strftime("%Y-%m-%d %H:%M")
             selected_message = {
                 "id": unique_id,  # Replace the original ID with the unique ID
                 "channel_id": message['peer_id']['channel_id'] if 'peer_id' in message and 'channel_id' in message['peer_id'] else None,

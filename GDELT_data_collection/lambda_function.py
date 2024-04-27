@@ -70,7 +70,7 @@ def extract_articles(articles):
     for article in articles:
         article_title = article['title']
         article_url = article['url']
-        article_date = datetime.strptime(article['seendate'], "%Y%m%dT%H%M%SZ").strftime("%Y-%m-%d %H:00")
+        article_date = datetime.strptime(article['seendate'], "%Y%m%dT%H%M%SZ").strftime("%Y-%m-%d %H:%M")
         extracted_article = {
                 "title": article_title,
                 "date": article_date,
