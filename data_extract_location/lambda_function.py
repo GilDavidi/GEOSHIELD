@@ -17,12 +17,27 @@ def process_message(message):
         location = None
         
         location_question = "Based on the information provided in the text, please identify the primary location where the main event is taking place. Choose only one location that accurately represents the central focus of the event (only answer like: Tel Aviv). If you cannot determine a specific location, please indicate null."
-        while not location or location.startswith(text_to_check):
-            location = generate_text(message["message"], location_question)
         
-        if location is not None:
-            message["location"] = str(location)
+        # Define maximum number of attempts to find a valid location
+        max_attempts = 3
+        attempt_count = 0
+        
+        while attempt_count < max_attempts:
+            location = generate_text(message["message"], location_question)
+            
+            # Check if the location is meaningful or empty
+            if location is not None and location.strip():  # Ensure location is not empty or whitespace
+                message["location"] = str(location)
+                break  # Exit loop if a valid location is found
+            else:
+                attempt_count += 1  # Increment attempt count
+                
+        # If no valid location is found after maximum attempts, default to 'null'
+        if attempt_count == max_attempts:
+            message["location"] = "null"
+            
     return message
+
 
 def lambda_handler(event, context):
     try:

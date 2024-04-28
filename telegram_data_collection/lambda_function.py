@@ -115,6 +115,11 @@ async def fetch_telegram_messages(client):
             break
         messages = history.messages
         for message in messages:
+            
+            if "\n\nTo comment, follow this link" in message.message:
+                # Remove the unwanted sentence
+                message.message = message.message.replace("\n\nTo comment, follow this link", "")
+            
             # Append the original message dictionary to all_messages
             all_messages.append(message.to_dict())
 
