@@ -14,7 +14,8 @@ def classify_and_invoke(bucket_name, input_key, file_name):
         messages = json.loads(json_data)
         
         # Define the endpoint of model service
-        model_endpoint = "http://ec2-52-212-231-146.eu-west-1.compute.amazonaws.com:8080/predict"
+
+        model_endpoint = "http://ec2-3-252-242-32.eu-west-1.compute.amazonaws.com:8080/predict"
         
         # Iterate through each message and classify it
         for message in messages:
@@ -89,6 +90,7 @@ def lambda_handler(event, context):
             "body": json.dumps(result)
         }
     except Exception as e:
+        print("error: "+ str(e))
         return {
             "statusCode": 500,
             "body": json.dumps({"error": str(e)})

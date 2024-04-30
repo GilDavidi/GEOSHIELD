@@ -21,8 +21,6 @@ def lambda_handler(event, context):
         # Read category from the event
         category = event['category']
 
-
-
         # Fetch GDELT articles based on category
         gdelt_data = make_gdelt_request(config, category)
         article_list = extract_articles(gdelt_data['articles'])
