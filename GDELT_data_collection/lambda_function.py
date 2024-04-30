@@ -42,13 +42,13 @@ def lambda_handler(event, context):
         }
 
 def make_gdelt_request(config, category):
-    keyword_bank = config['GDELT'][category]  # Access the keyword bank based on the category
-    keyword_query = ' OR '.join(keyword_bank.split(','))
+    # Access the keyword bank based on the category
+    keyword_query = config['GDELT'][category]  
 
     params = {
         'format': 'JSON',
         'timespan': '48H',
-        'query': f'({keyword_query}) sourcelang:eng',
+        'query': f'{keyword_query} sourcelang:eng',
         'mode': 'artlist',
         'maxrecords': 80,
         'sort': 'hybridrel'
@@ -63,7 +63,7 @@ def make_gdelt_request(config, category):
     else:
         print(f"Error: {response.status_code}")
         return None
-
+        
 def extract_articles(articles):
     extracted_articles = []
 

@@ -33,6 +33,7 @@ def find_matching_messages(messages):
                     text2 = message2.get("message")
                     levenshtein_sim = levenshtein_similarity(text1 , text2)
                     jaccard_sim = jaccard_similarity(text1 , text2)
+                    avg_score = (jaccard_sim + levenshtein_sim) / 2
             
                     # Decide if there is a match based on the similarity thresholds
                     if jaccard_sim > 0.6 and levenshtein_sim > 0.6:
@@ -43,6 +44,7 @@ def find_matching_messages(messages):
                             "message2": text2,
                             "jaccard_similarity": jaccard_sim,
                             "levenshtein_similarity": levenshtein_sim,
+                            "score": avg_score,
                             "location": gdelt_location
                         })
 
