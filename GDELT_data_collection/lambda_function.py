@@ -9,6 +9,10 @@ from newspaper import Article
 s3 = boto3.client('s3')
 lambda_client = boto3.client('lambda')
 
+# Read configuration
+config = configparser.ConfigParser()
+config.read("config.ini")
+
 # Define the base URL for the GDELT API
 gdelt_api_url = config['GDELT']['api_url'] 
 
@@ -17,9 +21,7 @@ def lambda_handler(event, context):
         # Read category from the event
         category = event['category']
 
-        # Read configuration
-        config = configparser.ConfigParser()
-        config.read("config.ini")
+
 
         # Fetch GDELT articles based on category
         gdelt_data = make_gdelt_request(config, category)

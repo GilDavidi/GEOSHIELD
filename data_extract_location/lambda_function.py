@@ -16,8 +16,7 @@ def process_message(message):
     if message["message"]:
         location = None
         
-        location_question = "Based on the information provided in the text, please identify the primary location where the main event is taking place. Choose only one location that accurately represents the central focus of the event (only answer like: Tel Aviv). If you cannot determine a specific location, please indicate null."
-        
+        location_question = "Based on the information in the text, please identify the main location where the main event takes place. Choose only one location that accurately represents the main focus of the event. Be sure to find the most specific location (eg city and country and not just country and so on). (Answer In English only. And only the location you found. Answer for example: 'ODESA' , if you cannot determine a specific location, answer only the exact word:'null' "       
         # Define maximum number of attempts to find a valid location
         max_attempts = 3
         attempt_count = 0

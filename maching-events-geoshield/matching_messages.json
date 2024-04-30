@@ -1,92 +1,72 @@
 [
     {
-        "message1_id": "486488af-907c-4c56-a8ce-d41ddd82b66d",
-        "message2_id": "87f3a860-12d6-459c-9270-9861e2beb076",
+        "message1_id": "13b79d6e-51dd-4577-9731-6b4ca9c248a8",
+        "message2_id": "6d34407e-6291-4925-b54c-82588a7767c3",
         "message1": "Rafah, Gaza (CNN) \u2014 Editor\u2019s Note: Warning: This story has graphic content.\nTwenty-two people, including at least one infant and a toddler, have been killed in an Israeli airstrike over Rafah, Gaza, overnight into Monday, according to hospital officials.\nLifting the baby boy\u2019s body to the camera, Mahmoud Abu Taha cries out, \u201cthis is who they are targeting.\nAnother member of the Abu Taha family says in the video that 10 of his relatives were killed in the airstrike.\nSome of his relatives were originally displaced from Khan Younis, where several of them were killed in a previous Israeli airstrike.",
         "message2": "Twenty-two people, including at least one infant and a toddler, have been killed in an Israeli airstrike over Rafah, Gaza, overnight into Monday, according to hospital officials.\nLifting the baby boy\u2019s body to the camera, Mahmoud Abu Taha cries out, \u201cthis is who they are targeting.\nAnother member of the Abu Taha family says in the video that 10 of his relatives were killed in the airstrike.\nSome of his relatives were originally displaced from Khan Younis, where several of them were killed in a previous Israeli airstrike.\nThe remaining few who had fled Khan Younis for the safety of Rafah have now been killed overnight in Rafah, he says.",
         "jaccard_similarity": 0.7355371900826446,
         "levenshtein_similarity": 0.6998444790046656,
         "score": 0.7176908345436551,
-        "location": "The primary location where the main event is taking place is Rafah, Gaza."
+        "location": "Rafah, Gaza"
     },
     {
-        "message1_id": "e08d10c5-e2ab-4992-9a5f-74dd71c95c1f",
-        "message2_id": "2cf2378a-26e2-4c75-bdc0-d6d440c87555",
+        "message1_id": "6a69bfa5-b94e-4d33-beb9-0c0f41d6cc14",
+        "message2_id": "a5105436-da16-43ad-9de3-b97fcbd1779f",
         "message1": "ODESA, Ukraine (Reuters) -A Russian missile attack on an educational institution in a popular seafront park in the Ukrainian Black Sea port of Odesa on Monday killed at least five people and injured 32, local officials said.\nReuters Television footage showed the roof of the ornate building, a private law academy, all but destroyed after the strike.\nI don't know what else to say,\" Odesa Mayor Hennadii Trukhanov said in a video posted on Telegram.\n\"In front of my eyes, a missile was shot down, this was just in front of me.\nOdesa has been a frequent target of Russian missile and drone attacks, particular port infrastructure.",
         "message2": "By Iryna Nazarchuk ReutersA Russian missile attack on an educational institution in a popular seafront park in the Ukrainian Black Sea port of Odesa on Monday killed at least five people and injured 32, local officials said.\nReuters Television footage showed the roof of the ornate building, a private law academy, all but destroyed after the strike.\nI don\u2019t know what else to say,\u201d Odesa Mayor Hennadii Trukhanov said in a video posted on Telegram.\nPublic broadcaster Suspilne said the academy\u2019s president, a prominent former member of parliament, Serhiy Kivalov, was among the injured.\nOdesa has been a frequent target of Russian missile and drone attacks, particular port infrastructure.",
         "jaccard_similarity": 0.6744186046511628,
         "levenshtein_similarity": 0.8202898550724638,
         "score": 0.7473542298618132,
-        "location": "Odesa"
+        "location": "ODESA"
     },
     {
-        "message1_id": "2aa8790c-058d-4de8-a18e-436b16ee563f",
-        "message2_id": "9bfa4a23-d17e-436e-a05d-a5ac23e7fd37",
+        "message1_id": "f0cdef4e-7c50-4027-8313-c4d2941c8c9a",
+        "message2_id": "e69f33e4-b207-4035-bab0-dc06d83321b0",
         "message1": "Jerusalem, Apr 30 (AP) A missile attack by Yemen's Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nThe ship was damaged in the attack, the UKMTO said, though its crew was safe and heading to its next port of call.\nMeanwhile Monday, the Italian Defence Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the US military shot down five drones in the air over the Red Sea, its Central Command said.",
         "message2": "A missile attack by Yemen\u2019s Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nThe ship was damaged in the attack, the UKMTO said, though its crew was safe and heading to its next port of call.\nMeanwhile Monday, the Italian Defence Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the US military shot down five drones in the air over the Red Sea, its Central Command said.",
         "jaccard_similarity": 0.952755905511811,
         "levenshtein_similarity": 0.9661016949152542,
         "score": 0.9594288002135326,
-        "location": "The primary location where the main event is taking place is the Red Sea region, particularly near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden."
+        "location": "Red Sea"
     },
     {
-        "message1_id": "782bf8fb-d47b-49a9-b175-69f4d9f8002f",
-        "message2_id": "10753ff9-d520-4e6d-96e8-df6a9e1aee06",
+        "message1_id": "f20b5dd2-4968-4dfa-86bc-2fbad3247aa9",
+        "message2_id": "2bd44d9d-f83e-4b7f-8d77-744a7416b01a",
         "message1": "JERUSALEM \u2014 A missile attack by Yemen's Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nMeanwhile Monday, the Italian Defense Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\n''The frigate Fasan and the protected merchant vessel are continuing their southward route as planned to exit the Red Sea.''\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
         "message2": "JERUSALEM \u2014 A missile attack by Yemen's Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nMeanwhile Monday, the Italian Defense Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\n''The frigate Fasan and the protected merchant vessel are continuing their southward route as planned to exit the Red Sea.''\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
         "jaccard_similarity": 1.0,
         "levenshtein_similarity": 1.0,
         "score": 1.0,
-        "location": "The primary location where the main event is taking place is the Red Sea region, specifically referring to incidents near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden."
-    },
-    {
-        "message1_id": "10753ff9-d520-4e6d-96e8-df6a9e1aee06",
-        "message2_id": "d2ef4112-822f-4215-931d-e209e3380ac3",
-        "message1": "JERUSALEM \u2014 A missile attack by Yemen's Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nMeanwhile Monday, the Italian Defense Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\n''The frigate Fasan and the protected merchant vessel are continuing their southward route as planned to exit the Red Sea.''\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
-        "message2": "JERUSALEM (AP) \u2014 A missile attack by Yemen\u2019s Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nThe ship was damaged in the attack, the UKMTO said, though its crew was safe and heading to its next port of call.\nMeanwhile Monday, the Italian Defense Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
-        "jaccard_similarity": 0.7323943661971831,
-        "levenshtein_similarity": 0.6572637517630465,
-        "score": 0.6948290589801148,
         "location": "Red Sea"
     },
     {
-        "message1_id": "6fa53285-3480-48d7-9473-07d975b7cbf6",
-        "message2_id": "47c2cf40-25fa-4fb5-bb1b-7449514b3cdf",
+        "message1_id": "2bd44d9d-f83e-4b7f-8d77-744a7416b01a",
+        "message2_id": "505e4268-3fb8-4332-8ca0-a0972dfd8b52",
+        "message1": "JERUSALEM \u2014 A missile attack by Yemen's Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nMeanwhile Monday, the Italian Defense Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\n''The frigate Fasan and the protected merchant vessel are continuing their southward route as planned to exit the Red Sea.''\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
+        "message2": "Open this photo in gallery: Yemen's capital Sana'a is seen on a map.The Associated PressA suspected missile attack by Yemen\u2019s Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against international shipping in the crucial maritime route.\nMeanwhile Monday, the Italian Defence Ministry said its frigate Virginio Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\nHouthi attacks have dropped in recent weeks as the rebels have been targeted by a U.S.-led air strike campaign in Yemen.\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
+        "jaccard_similarity": 0.6163522012578616,
+        "levenshtein_similarity": 0.7406947890818858,
+        "score": 0.6785234951698738,
+        "location": "Bab el-Mandeb Strait, located between the Red Sea and the Gulf of Aden."
+    },
+    {
+        "message1_id": "8cae9e1c-ebf7-42ab-a6c5-4d49b1fc6d43",
+        "message2_id": "1ebfb6cb-1ca7-402b-ae88-8e648ea765a2",
         "message1": "A day of mourning has been declared in the Ukrainian port city of Odesa after a Russian missile strike killed five people and left 32 other injured.\nIn a Google-translated update on Telegram, Russia's defense ministry said that air defense systems had, in the past 24 hours, \"shot down ... six ATACMS operational-tactical missiles made in the USA.\"\nIt's uncertain how many ATACMS missiles Ukraine was given.\nIt's widely believed that Russian forces are aiming to recapture the city of Kharkiv in their forthcoming summer offensive.\nRussia's defense ministry announced the capture of the village of Novobakhmutivka, just north of Semenivka, on Sunday.",
         "message2": "A day of mourning has been declared in the Ukrainian port city of Odesa after a Russian missile strike killed five people and left 32 other injured.\nIn a Google-translated update on Telegram, Russia's defense ministry said that air defense systems had, in the past 24 hours, \"shot down ... six ATACMS operational-tactical missiles made in the USA.\"\nIt's uncertain how many ATACMS missiles Ukraine was given.\nIt's widely believed that Russian forces are aiming to recapture the city of Kharkiv in their forthcoming summer offensive.\nRussia's defense ministry announced the capture of the village of Novobakhmutivka, just north of Semenivka, on Sunday.",
         "jaccard_similarity": 1.0,
         "levenshtein_similarity": 1.0,
         "score": 1.0,
-        "location": "Odesa"
+        "location": "ODESA"
     },
     {
-        "message1_id": "f24fd3ad-88be-4aa8-9e19-ce43f5352684",
-        "message2_id": "1579558d-ee68-426f-b3ea-da2334664b0a",
+        "message1_id": "bb57b22d-c6cd-43b7-8fc5-de2f9214585d",
+        "message2_id": "ff29c481-c5bc-4f7c-913a-43bc2e8553b6",
         "message1": "JERUSALEM \u2014 Yemen\u2019s Houthi rebels on Saturday claimed shooting down another of the U.S. military\u2019s MQ-9 Reaper drones, airing footage of parts that corresponded to known pieces of the unmanned aircraft.\nThe Houthis described the downing as happening Thursday over their stronghold in the country\u2019s Saada province.\nThe war began after Hamas-led militants attacked Israel on Oct. 7, killing 1,200 people and taking some 250 others hostage.\nHouthi attacks have dropped in recent weeks as the rebels have been targeted by a U.S.-led airstrike campaign in Yemen.\nHowever, the rebels have renewed their attacks in the last week.",
         "message2": "JERUSALEM \u2014 Yemen\u2019s Houthi rebels on Saturday claimed shooting down another of the U.S. military\u2019s MQ-9 Reaper drones, airing footage of parts that corresponded to known pieces of the unmanned aircraft.\nThe Houthis described the downing as happening Thursday over their stronghold in the country\u2019s Saada province.\nThe war began after Hamas-led militants attacked Israel on Oct. 7, killing 1,200 people and taking some 250 others hostage.\nHouthi attacks have dropped in recent weeks as the rebels have been targeted by a U.S.-led airstrike campaign in Yemen.\nHowever, the rebels have renewed their attacks in the last week.",
         "jaccard_similarity": 1.0,
         "levenshtein_similarity": 1.0,
         "score": 1.0,
-        "location": "The primary location where the main event is taking place is Saada province."
-    },
-    {
-        "message1_id": "11030b7e-2f32-4cd5-8719-a8558632aca2",
-        "message2_id": "d2ef4112-822f-4215-931d-e209e3380ac3",
-        "message1": "Authorities said a missile attack by Yemen\u2019s Houthi rebels damaged a ship in the Red Sea in the latest assault in their campaign against shipping in the crucial maritime routeJERUSALEM -- A missile attack by Yemen's Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nThe military separately shot down a drone on a flight path toward the USS Philippine Sea and USS Laboon, the military said Tuesday.\nMeanwhile Monday, the Italian Defense Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
-        "message2": "JERUSALEM (AP) \u2014 A missile attack by Yemen\u2019s Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nThe ship was damaged in the attack, the UKMTO said, though its crew was safe and heading to its next port of call.\nMeanwhile Monday, the Italian Defense Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
-        "jaccard_similarity": 0.6162790697674418,
-        "levenshtein_similarity": 0.6883408071748879,
-        "score": 0.6523099384711648,
-        "location": "Red Sea"
-    },
-    {
-        "message1_id": "6b855377-21c3-413a-9fef-546e0f048abc",
-        "message2_id": "67c6c35c-4911-4f80-bab6-569e618601bb",
-        "message1": "JERUSALEM (AP) \u2014 A suspected missile attack by Yemen's Houthi rebels targeted a container ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against international shipping in the crucial maritime route.\nThe private security firm Ambrey said a salvo of three missiles targeted a Malta-flagged container ship traveling from Djibouti onward to Jeddah, Saudi Arabia.\n\u201cThe vessel was targeted due to its listed operator\u2019s ongoing trade with Israel,\u201d Ambrey said.\nHouthi attacks have dropped in recent weeks as the rebels have been targeted by a U.S.-led airstrike campaign in Yemen.\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.",
-        "message2": "A suspected missile attack by Yemen's Houthi rebels targeted a container ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against international shipping in the crucial maritime route.\nThe attack happened off the coast of Mokha, Yemen, the British military's United Kingdom Maritime Trade Operations center said, without offering any other immediate details.\nThe private security firm Ambrey said a salvo of three missiles targeted a Malta-flagged container ship traveling from Djibouti onward to Jeddah, Saudi Arabia.\nHouthi attacks have dropped in recent weeks as the rebels have been targeted by a U.S.-led airstrike campaign in Yemen.\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.",
-        "jaccard_similarity": 0.6838235294117647,
-        "levenshtein_similarity": 0.66005291005291,
-        "score": 0.6719382197323374,
-        "location": "Mokha, Yemen"
+        "location": "Saada province, Yemen."
     }
 ]
