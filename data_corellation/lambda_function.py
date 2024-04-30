@@ -70,6 +70,7 @@ def lambda_handler(event, context):
     telegram_file_key = "telegram_messages_classified.json"
     gdelt_file_key = "gdelt_articles_classified.json"
     
+
     # Load JSON files from S3
     gdelt_messages = load_json_from_s3(input_bucket_name, gdelt_file_key)
 
