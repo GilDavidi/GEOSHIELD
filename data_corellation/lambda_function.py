@@ -12,34 +12,38 @@ def load_json_from_s3(bucket_name, file_key):
 def levenshtein_similarity(text1, text2):
     return 1 - Levenshtein.distance(text1, text2) / max(len(text1), len(text2))
 
-def find_matching_messages(telegram_messages, gdelt_messages):
+def find_matching_messages(messages):
     matching_messages = []
 
-    for telegram_message in telegram_messages:
-        for gdelt_message in gdelt_messages:
-            if telegram_message.get("classification") == "security" and gdelt_message.get("classification") == "security":
-                telegram_timestamp = datetime.fromisoformat(telegram_message.get("date"))
-                gdelt_timestamp = datetime.fromisoformat(gdelt_message.get("date"))
-                time_difference = abs(telegram_timestamp - gdelt_timestamp)
+    message_indices = {i: message.get("id") for i, message in enumerate(messages)}
+
+    for i, message1 in enumerate(messages):
+        for j in range(i+1, len(messages)):  # Start from i+1 to avoid duplicate comparisons
+            message2 = messages[j]
+                
+            if message1.get("classification") == "security" and message2.get("classification") == "security":
+                message1_timestamp = datetime.fromisoformat(message1.get("date"))
+                message2_timestamp = datetime.fromisoformat(message2.get("date"))
+                time_difference = abs(message1_timestamp - message2_timestamp)
 
                 # Check if the time difference is within 6 hours
                 if time_difference <= timedelta(hours=6):
-                    telegram_text = telegram_message.get("message")
-                    telegram_location = telegram_message.get("location")
-                    gdelt_text = gdelt_message.get("message")
-                    levenshtein_sim = levenshtein_similarity(telegram_text , gdelt_text)
-                    jaccard_sim = jaccard_similarity(telegram_text , gdelt_text)
-                    
-                    # Decide if there is a match based on some threshold
-                    if jaccard_sim > 0.15 and levenshtein_sim > 0.25:
+                    gdelt_location = message2.get("location")
+                    text1 = message1.get("message")
+                    text2 = message2.get("message")
+                    levenshtein_sim = levenshtein_similarity(text1 , text2)
+                    jaccard_sim = jaccard_similarity(text1 , text2)
+            
+                    # Decide if there is a match based on the similarity thresholds
+                    if jaccard_sim > 0.6 and levenshtein_sim > 0.6:
                         matching_messages.append({
-                            "Telegram_id": telegram_message.get('id'),
-                            "GDELT_id": gdelt_message.get('id'),
-                            "Telegram_message": telegram_text,
-                            "GDELT_message": gdelt_text,
+                            "message1_id": message_indices[i],
+                            "message2_id": message_indices[j],
+                            "message1": text1,
+                            "message2": text2,
                             "jaccard_similarity": jaccard_sim,
                             "levenshtein_similarity": levenshtein_sim,
-                            "location": telegram_location
+                            "location": gdelt_location
                         })
 
     return matching_messages
@@ -49,9 +53,9 @@ def remove_duplicates(matching_messages):
     best_matches = {}
 
     for message in matching_messages:
-        telegram_id = message["Telegram_id"]
-        if telegram_id not in best_matches or message["jaccard_similarity"] > best_matches[telegram_id].get("jaccard_similarity", 0):
-            best_matches[telegram_id] = message
+        message1_id = message["message1_id"]
+        if message1_id not in best_matches or message["jaccard_similarity"] > best_matches[message1_id].get("jaccard_similarity", 0):
+            best_matches[message1_id] = message
 
     return list(best_matches.values())
 
@@ -67,10 +71,9 @@ def lambda_handler(event, context):
     gdelt_file_key = "gdelt_articles_classified.json"
     
     # Load JSON files from S3
-    telegram_messages = load_json_from_s3(input_bucket_name, telegram_file_key)
     gdelt_messages = load_json_from_s3(input_bucket_name, gdelt_file_key)
 
-    matching_messages = find_matching_messages(telegram_messages, gdelt_messages)
+    matching_messages = find_matching_messages(gdelt_messages)
     unique_matching_messages = remove_duplicates(matching_messages)
 
     # Export matching messages to a temporary file
