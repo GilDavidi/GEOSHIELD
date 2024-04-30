@@ -1,0 +1,164 @@
+[
+    {
+        "message1_id": "5f62af3d-ac1a-4227-a1e3-a5d52189d498",
+        "message2_id": "14958f50-9cb2-445b-84f6-2fd75f1353f8",
+        "message1": "April 28, 2024 10:30 pm | Updated 10:30 pm IST - BeirutLebanon\u2019s Iran-backed Hezbollah movement said on Saturday it had targeted northern Israel with drones and guided missiles after cross-border Israeli strikes killed three people, including two of its members.\nThe Israeli Army said its Iron Dome air-defence system \u201csuccessfully intercepted a suspicious aerial target that crossed from Lebanon into the area of Manara in northern Israel\u201d.\nThe Army also \u201cstruck the sources of fire\u201d of several anti-tank missiles launched from Lebanon into the Manara border area, it added.\nOvernight Saturday to Sunday Hezbollah said it had launched dozens of rockets at the Israeli military base at Meron, northern Israel.\nHezbollah has intensified its targeting of military sites in Israel since tensions soared between Israel and Iran over the bombing of Tehran\u2019s Damascus consulate on April 1, widely blamed on Israel.",
+        "message2": "Lebanon\u2019s Iran-backed Hezbollah movement said Saturday it had targeted northern Israel with drones and guided missiles after cross-border Israeli strikes killed three people, including two of its members.\nThe Israeli army said its Iron Dome air-defence system \u201csuccessfully intercepted a suspicious aerial target that crossed from Lebanon into the area of Manara in northern Israel\u201d.\nThe army also \u201cstruck the sources of fire\u201d of several anti-tank missiles launched from Lebanon into the Manara border area, it added.\nOvernight Saturday to Sunday Hezbollah said it had launched dozens of rockets at the Israeli military base at Meron, northern Israel.\nAn Israeli army statement said its Iron Dome system had succeeded in intercepting missiles fired towards northern Israel from Lebanon\u2019s al-Manara region.",
+        "jaccard_similarity": 0.6012269938650306,
+        "levenshtein_similarity": 0.7687224669603524,
+        "location": "Northern Israel"
+    },
+    {
+        "message1_id": "0eb906ad-b6f1-407c-aa33-ce796275df2e",
+        "message2_id": "7f3e85da-6dac-421c-b993-529004e9fe42",
+        "message1": "CAIRO \u2014 Hamas said Saturday it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the monthslong war and stave off a planned Israeli ground offensive into the southern city of Rafah.\nHamas previously said it won't back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hits the city with near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nGaza war protests ignite on US college campuses",
+        "message2": "CAIRO \u2014 Hamas said Saturday it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the monthslong war and stave off a planned Israeli ground offensive into the southern city of Rafah.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael\u2019s military confirmed Saturday that it would be operational by early May.",
+        "jaccard_similarity": 0.7737226277372263,
+        "levenshtein_similarity": 0.8783422459893048,
+        "location": "GAZA CITY"
+    },
+    {
+        "message1_id": "887edfa5-75ae-4211-afeb-851ae98675d1",
+        "message2_id": "0f414f3d-b553-4d47-889c-4bc176bfe255",
+        "message1": "A separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael\u2019s military confirmed Saturday that it would be operational by early May.",
+        "message2": "A separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael\u2019s military confirmed Saturday that it would be operational by early May.",
+        "jaccard_similarity": 1.0,
+        "levenshtein_similarity": 1.0,
+        "location": "Reminder: My knowledge cut-off date is January 2022. Based on the information provided, the main event appears to be centered around Rafah, a city located in the southern Gaza Strip."
+    },
+    {
+        "message1_id": "0f414f3d-b553-4d47-889c-4bc176bfe255",
+        "message2_id": "21183051-76cc-43e5-9ced-0e37bbaed7d7",
+        "message1": "A separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael\u2019s military confirmed Saturday that it would be operational by early May.",
+        "message2": "A separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military confirmed Saturday that it would be operational by early May.",
+        "jaccard_similarity": 0.9805825242718447,
+        "levenshtein_similarity": 0.9984025559105432,
+        "location": "Rafah"
+    },
+    {
+        "message1_id": "7f3e85da-6dac-421c-b993-529004e9fe42",
+        "message2_id": "88981e65-b5c6-4885-80a9-d53fa02f0875",
+        "message1": "CAIRO \u2014 Hamas said Saturday it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the monthslong war and stave off a planned Israeli ground offensive into the southern city of Rafah.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael\u2019s military confirmed Saturday that it would be operational by early May.",
+        "message2": "CAIRO \u2014 Hamas said Saturday it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the months-long war and stave off a planned Israeli ground offensive into the southern city of Rafah.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael\u2019s military confirmed Saturday that it would be operational by early May.",
+        "jaccard_similarity": 0.9841269841269841,
+        "levenshtein_similarity": 0.9986648865153538,
+        "location": "Reminder: My knowledge cut-off date is January 2022. \n\nThe main event in the text is taking place in **Gaza**."
+    },
+    {
+        "message1_id": "f96ea01c-f239-49be-a333-6bdba8272998",
+        "message2_id": "3f356a6a-d671-4850-aac0-57413c35467f",
+        "message1": "Senior Hamas official Khalil al-Hayya gave no details of Israel\u2019s offer, but said it was in response to a proposal from Hamas two weeks ago.\nA separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah, and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a three-story building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael\u2019s military said Saturday that it would be operational by early May.",
+        "message2": "Senior Hamas official Khalil al-Hayya gave no details of Israel's offer, but said it was in response to a proposal from Hamas two weeks ago.\nA separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah, and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a three-story building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military said Saturday that it would be operational by early May.",
+        "jaccard_similarity": 0.963963963963964,
+        "levenshtein_similarity": 0.9969788519637462,
+        "location": "Rafah"
+    },
+    {
+        "message1_id": "3f356a6a-d671-4850-aac0-57413c35467f",
+        "message2_id": "21183051-76cc-43e5-9ced-0e37bbaed7d7",
+        "message1": "Senior Hamas official Khalil al-Hayya gave no details of Israel's offer, but said it was in response to a proposal from Hamas two weeks ago.\nA separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah, and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a three-story building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military said Saturday that it would be operational by early May.",
+        "message2": "A separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military confirmed Saturday that it would be operational by early May.",
+        "jaccard_similarity": 0.7016129032258065,
+        "levenshtein_similarity": 0.6722054380664653,
+        "location": "Rafah"
+    },
+    {
+        "message1_id": "88981e65-b5c6-4885-80a9-d53fa02f0875",
+        "message2_id": "21183051-76cc-43e5-9ced-0e37bbaed7d7",
+        "message1": "CAIRO \u2014 Hamas said Saturday it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the months-long war and stave off a planned Israeli ground offensive into the southern city of Rafah.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael\u2019s military confirmed Saturday that it would be operational by early May.",
+        "message2": "A separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military confirmed Saturday that it would be operational by early May.",
+        "jaccard_similarity": 0.6214285714285714,
+        "levenshtein_similarity": 0.7516688918558078,
+        "location": "Rafah"
+    },
+    {
+        "message1_id": "21183051-76cc-43e5-9ced-0e37bbaed7d7",
+        "message2_id": "dc9244d4-e9e2-40ac-ba39-31e2acb6bc5b",
+        "message1": "A separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military confirmed Saturday that it would be operational by early May.",
+        "message2": "A separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael\u2019s military confirmed Saturday that it would be operational by early May.",
+        "jaccard_similarity": 0.9805825242718447,
+        "levenshtein_similarity": 0.9984025559105432,
+        "location": "Rafah"
+    },
+    {
+        "message1_id": "e901fa0e-f4bd-47b5-87e5-cd5343019b39",
+        "message2_id": "cce585fd-97fd-4dcc-9a42-8b7a76ea93e9",
+        "message1": "Senior Hamas official Khalil al-Hayya gave no details of Israel's offer, but said it was in response to a Hamas proposal two weeks ago.\nHamas has said it won't back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThere is growing international pressure for Hamas and Israel to reach a cease-fire deal and avert an Israeli attack on Rafah, where more than half of Gaza's 2.3 million people have sought refuge.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military confirmed Saturday that it would be operational by early May.",
+        "message2": "Senior Hamas official Khalil al-Hayya gave no details of Israel's offer, but said it was in response to a Hamas proposal two weeks ago.\nHamas has said it won't back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThere is growing international pressure for Hamas and Israel to reach a cease-fire deal and avert an Israeli attack on Rafah, where more than half of Gaza's 2.3 million people have sought refuge.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military confirmed Saturday that it would be operational by early May.",
+        "jaccard_similarity": 1.0,
+        "levenshtein_similarity": 1.0,
+        "location": "Reminder: My knowledge cut-off date is January 2022. Based on the information provided, the main event is taking place in Rafah, Gaza."
+    },
+    {
+        "message1_id": "dc9244d4-e9e2-40ac-ba39-31e2acb6bc5b",
+        "message2_id": "214e5b12-d370-4fdc-a034-310f49b4fa83",
+        "message1": "A separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael\u2019s military confirmed Saturday that it would be operational by early May.",
+        "message2": "A separate Hamas statement said leaders from the three main militant groups active in Gaza discussed attempts to end the war.\nHamas has said it won\u2019t back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThe Israeli military has massed dozens of tanks and armored vehicles in southern Israel close to Rafah and hit locations in the city in near-daily airstrikes.\nElsewhere, Israeli forces shot and killed two Palestinian men at a checkpoint in the Israeli-occupied West Bank, the military said.\nIsrael\u2019s military confirmed Saturday that it would be operational by early May.",
+        "jaccard_similarity": 0.7241379310344828,
+        "levenshtein_similarity": 0.8146964856230032,
+        "location": "null"
+    },
+    {
+        "message1_id": "d705b69e-d56f-485d-9e32-b2e90b7a72f8",
+        "message2_id": "a2fc7fb6-2581-4d6d-8b2e-4243fc3c58e5",
+        "message1": "Hamas said Saturday it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the months-long war and stave off a possible Israeli ground offensive into the southern Gaza city of Rafah.\nIt was not immediately clear whether Israel\u2019s latest response to Hamas on a cease-fire was directly related to Friday\u2019s visit to Tel Aviv by Egyptian mediators.\nIsrael says it will continue military operations until Hamas is defeated and that it will retain a security presence in Gaza afterward.\nThe ministry said Saturday that 32 people killed in Israeli strikes had been brought to local hospitals over the past 24 hours.\nIsrael has reported at least 260 of its soldiers killed since the start of ground operations in Gaza.",
+        "message2": "Hamas said Saturday it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the months-long war and stave off a possible Israeli ground offensive into the southern Gaza city of Rafah.\nNegotiations earlier this month centered on a six-week cease-fire proposal and the release of 40 civilian and sick hostages in exchange for freeing hundreds of Palestinian prisoners in Israeli jails.\nIt was not immediately clear whether Israel\u2019s latest response to Hamas on a cease-fire was directly related to Friday\u2019s visit to Tel Aviv by Egyptian mediators.\nIsrael says it will continue military operations until Hamas is defeated and that it will retain a security presence in Gaza afterward.\nIsrael has reported at least 260 of its soldiers killed since the start of ground operations in Gaza.",
+        "jaccard_similarity": 0.7088607594936709,
+        "levenshtein_similarity": 0.6118343195266271,
+        "location": "Rafah"
+    },
+    {
+        "message1_id": "ca0df2ba-c3f1-4ed3-a74a-eda54e575ab7",
+        "message2_id": "dbccb106-3fa5-4bca-b186-b31b48d65b23",
+        "message1": "Hamas' armed wing the Ezzedine al-Qassam Brigades fired Monday a barrage of rockets from south Lebanon toward a command center in northern Israel.\nHamas fighters \"have fired a concentrated rocket barrage from south Lebanon towards\" an Israeli military position, said the Ezzedine al-Qassam Brigades in a statement on Telegram.\nHamas' rocket barrage came as Hamas negotiators were expected to arrive in Egypt on Monday, where they were due to respond to Israel's latest proposal for a long-sought truce in Gaza and hostage release.\nOn April 21, the Qassam Brigades claimed a rocket barrage into northern Israel.\nAn Israeli strike later in March killed a Hamas operative near the Palestinian refugee camp of Rashidiyeh in the Tyre district.",
+        "message2": "Hamas' armed wing the Ezzedine al-Qassam Brigades fired Monday a barrage of rockets from south Lebanon toward a command center in northern Israel.\nHamas fighters \"have fired a concentrated rocket barrage from south Lebanon towards\" an Israeli military position, said the Ezzedine al-Qassam Brigades in a statement on Telegram.\nHamas' rocket barrage came as Hamas negotiators were expected to arrive in Egypt on Monday, where they were due to respond to Israel's latest proposal for a long-sought truce in Gaza and hostage release.\nOn April 21, the Qassam Brigades claimed a rocket barrage into northern Israel.\nAn Israeli strike later in March killed a Hamas operative near the Palestinian refugee camp of Rashidiyeh in the Tyre district.",
+        "jaccard_similarity": 1.0,
+        "levenshtein_similarity": 1.0,
+        "location": "null"
+    },
+    {
+        "message1_id": "40cca69f-c97f-4ca3-8018-1fce68f4b283",
+        "message2_id": "0df59078-f07e-401c-87c2-b037cd258219",
+        "message1": "Hamas is reviewing an Israeli proposal for a cease-fire in Gaza, as a planned Rafah offensive loomsThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nCAIRO -- Hamas said Saturday that it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the months-long war and stave off a planned Israeli ground offensive into the southern city of Rafah.",
+        "message2": "Hamas is reviewing an Israeli proposal for a cease-fire in Gaza, as a planned Rafah offensive loomsThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nCAIRO -- Hamas said Saturday that it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the months-long war and stave off a planned Israeli ground offensive into the southern city of Rafah.",
+        "jaccard_similarity": 1.0,
+        "levenshtein_similarity": 1.0,
+        "location": "Rafah"
+    },
+    {
+        "message1_id": "0df59078-f07e-401c-87c2-b037cd258219",
+        "message2_id": "2c5bd072-7c4a-42e8-a3b6-f3ef95f6d297",
+        "message1": "Hamas is reviewing an Israeli proposal for a cease-fire in Gaza, as a planned Rafah offensive loomsThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nCAIRO -- Hamas said Saturday that it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the months-long war and stave off a planned Israeli ground offensive into the southern city of Rafah.",
+        "message2": "Hamas is reviewing an Israeli proposal for a cease-fire in Gaza, as a planned Rafah offensive loomsThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nCAIRO -- Hamas said Saturday that it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the months-long war and stave off a planned Israeli ground offensive into the southern city of Rafah.",
+        "jaccard_similarity": 1.0,
+        "levenshtein_similarity": 1.0,
+        "location": "Gaza"
+    },
+    {
+        "message1_id": "2c5bd072-7c4a-42e8-a3b6-f3ef95f6d297",
+        "message2_id": "d0908e2c-a773-4cc1-b76a-f5b462f1f087",
+        "message1": "Hamas is reviewing an Israeli proposal for a cease-fire in Gaza, as a planned Rafah offensive loomsThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nCAIRO -- Hamas said Saturday that it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the months-long war and stave off a planned Israeli ground offensive into the southern city of Rafah.",
+        "message2": "Hamas is reviewing an Israeli proposal for a cease-fire in Gaza, as a planned Rafah offensive loomsThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nThe U.S. declined to sanction three Israeli military units accused of abusing Palestinian civilians.\nCAIRO -- Hamas said Saturday that it was reviewing a new Israeli proposal for a cease-fire in Gaza, as Egypt intensified efforts to broker a deal to end the months-long war and stave off a planned Israeli ground offensive into the southern city of Rafah.",
+        "jaccard_similarity": 1.0,
+        "levenshtein_similarity": 1.0,
+        "location": "Gaza."
+    },
+    {
+        "message1_id": "cce585fd-97fd-4dcc-9a42-8b7a76ea93e9",
+        "message2_id": "7cebe3c6-61fa-4537-a416-10170fddedb8",
+        "message1": "Senior Hamas official Khalil al-Hayya gave no details of Israel's offer, but said it was in response to a Hamas proposal two weeks ago.\nHamas has said it won't back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThere is growing international pressure for Hamas and Israel to reach a cease-fire deal and avert an Israeli attack on Rafah, where more than half of Gaza's 2.3 million people have sought refuge.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military confirmed Saturday that it would be operational by early May.",
+        "message2": "Senior Hamas official Khalil al-Hayya gave no details of Israel's offer, but said it was in response to a Hamas proposal two weeks ago.\nHamas has said it won't back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThere is growing international pressure for Hamas and Israel to reach a cease-fire deal and avert an Israeli attack on Rafah, where more than half of Gaza's 2.3 million people have sought refuge.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military confirmed Saturday that it would be operational by early May.",
+        "jaccard_similarity": 1.0,
+        "levenshtein_similarity": 1.0,
+        "location": "Reminder: My knowledge cut-off date is January 2022.\n\nThe primary location where the main event is taking place is Rafah in the Gaza Strip."
+    },
+    {
+        "message1_id": "7cebe3c6-61fa-4537-a416-10170fddedb8",
+        "message2_id": "45295c3a-ce82-4554-a5b5-292a63a0f17b",
+        "message1": "Senior Hamas official Khalil al-Hayya gave no details of Israel's offer, but said it was in response to a Hamas proposal two weeks ago.\nHamas has said it won't back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThere is growing international pressure for Hamas and Israel to reach a cease-fire deal and avert an Israeli attack on Rafah, where more than half of Gaza's 2.3 million people have sought refuge.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military confirmed Saturday that it would be operational by early May.",
+        "message2": "Senior Hamas official Khalil al-Hayya gave no details of Israel's offer, but said it was in response to a Hamas proposal two weeks ago.\nHamas has said it won't back down from demands for a permanent cease-fire and full withdrawal of Israeli troops.\nThere is growing international pressure for Hamas and Israel to reach a cease-fire deal and avert an Israeli attack on Rafah, where more than half of Gaza's 2.3 million people have sought refuge.\nAn Israeli airstrike later Saturday on a building in Rafah killed seven people, including six members of the Ashour family, according to the morgue.\nIsrael's military confirmed Saturday that it would be operational by early May.",
+        "jaccard_similarity": 1.0,
+        "levenshtein_similarity": 1.0,
+        "location": "Rafah"
+    }
+]
