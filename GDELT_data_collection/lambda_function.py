@@ -10,7 +10,7 @@ s3 = boto3.client('s3')
 lambda_client = boto3.client('lambda')
 
 # Define the base URL for the GDELT API
-gdelt_api_url = "https://api.gdeltproject.org/api/v2/doc/doc"
+gdelt_api_url = config['GDELT']['api_url'] 
 
 def lambda_handler(event, context):
     try:
