@@ -7,15 +7,8 @@ lambda_client = boto3.client('lambda')
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-def classify_and_invoke(bucket_name, input_key, file_name):
+def classify_and_invoke(messages, file_name):
     try:
-        # Initialize Boto3 client for S3
-        s3 = boto3.client('s3')
-        
-        # Read JSON data from input S3 bucket
-        response = s3.get_object(Bucket=bucket_name, Key=input_key)
-        json_data = response['Body'].read().decode('utf-8')
-        messages = json.loads(json_data)
         
         # Define the endpoint of model service
         model_endpoint =  config['EC2']['URL'] 
@@ -53,29 +46,27 @@ def classify_and_invoke(bucket_name, input_key, file_name):
         
         # Invoke the destination Lambda function
         lambda_client.invoke(
-            FunctionName='data_extract_location',
+            FunctionName='data_extract_events',
             InvocationType='Event',  
             Payload=json.dumps(payload)
         )
         
-        return {"message": "Successfully invoked data_extract_location"}
+        print("Successfully invoked data_extract_events")
+        return {"message": "Successfully invoked data_extract_events"}
     except Exception as e:
         print("error: "+ str(e))
         return str(e)
 
 def lambda_handler(event, context):
     try:
-        # Extracting S3 bucket name and object key from the SQS message
-        message_body = json.loads(event['Records'][0]['body'])
-        inner_message_body = json.loads(message_body['Message'])
-        file_name = inner_message_body['Records'][0]['s3']['object']['key']
-    
+        # Extracting object key and messages from the event
+        file_name = event['file_name']
+        messages = event['messages']
         print("new " + file_name + " upload")
         
         # Classify messages and invoke data_extract_location
         result = classify_and_invoke(
-            bucket_name='raw-data-geoshield',
-            input_key=file_name,
+            messages=messages,
             file_name=file_name
         )
 

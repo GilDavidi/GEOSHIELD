@@ -3,22 +3,34 @@ import boto3
 import concurrent.futures
 from g4f.client import Client
 
-def generate_event_breakdown(text):
+
+def generate_text(message, question):
     client = Client()
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": "What are the events in the text? Write it only in English, in the form of a list of reports (without conclusions and without some summary sentence after the events or title) (For me, an event is an event that can be placed on a map - that is, with a location). If several events are related to each other, list them as a single event in brief " + text}]
+        messages=[{"role": "user", "content": question + message}]
     )
     return response.choices[0].message.content
 
 def process_message(message):
     text_to_check = "\u6d41\u91cf\u5f02\u5e38" 
-    if message["message"]:
-        event_breakdown = None
-        while not event_breakdown or event_breakdown.startswith(text_to_check):
-            event_breakdown = generate_event_breakdown(message["message"])
-        if event_breakdown is not None:
+    event_breakdown_question="What are the events in the text? Write it only in English, in the form of a list of reports (without conclusions and without some summary sentence after the events or title) (For me, an event is an event that can be placed on a map - that is, with a location). If several events are related to each other, list them as a single event in brief"
+    # Define maximum number of attempts to find a valid location
+    max_attempts = 3
+    attempt_count = 0
+    event_breakdown = None
+    while attempt_count < max_attempts:
+        event_breakdown = generate_text(message["message"], event_breakdown_question)
+        if event_breakdown is not None and "January 2022" not in event_breakdown and text_to_check not in event_breakdown:
             message["event_breakdown"] = str(event_breakdown)
+            break  # Exit loop if a valid location is found
+        else:
+            attempt_count += 1  # Increment attempt count
+            
+        # If no valid location is found after maximum attempts, default to 'null'
+        if attempt_count == max_attempts:
+            message["event_breakdown"] = "null"
+    
     return message
 
 def lambda_handler(event, context):

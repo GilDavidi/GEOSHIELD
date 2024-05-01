@@ -24,8 +24,8 @@ def process_message(message):
         while attempt_count < max_attempts:
             location = generate_text(message["message"], location_question)
             
-            # Check if the location is meaningful or empty
-            if location is not None and location.strip():  # Ensure location is not empty or whitespace
+            # Check if the location is meaningful, not empty, and does not contain specific words
+            if location is not None and "January 2022" not in location and text_to_check not in location:
                 message["location"] = str(location)
                 break  # Exit loop if a valid location is found
             else:
@@ -40,19 +40,32 @@ def process_message(message):
 
 def lambda_handler(event, context):
     try:
-        file_name = event['file_name']
-        print("extract location " + file_name + " start")
         
-        # Process messages
-        messages = event['messages']
+        # Extracting S3 bucket name and object key from the SQS message
+        message_body = json.loads(event['Records'][0]['body'])
+        inner_message_body = json.loads(message_body['Message'])
+        file_name = inner_message_body['Records'][0]['s3']['object']['key']
+        
+        print("extract location " + file_name + " start")
+        # Initialize Boto3 client for S3
+        s3 = boto3.client('s3')
+        
+        # Read JSON data from input S3 bucket
+        response = s3.get_object(Bucket='raw-data-geoshield', Key=file_name)
+        json_data = response['Body'].read().decode('utf-8')
+        messages = json.loads(json_data)
+        
         max_workers = 10
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            processed_messages = list(executor.map(process_message, messages))
+            processed_messages = list(filter(lambda x: x is not None, executor.map(process_message, messages)))
             
+        # Filter out messages with null location
+        processed_messages = [msg for msg in processed_messages if msg["location"] != "null"]
+        
         # Invoke another Lambda function to process the results
         lambda_client = boto3.client('lambda')
         invoke_response = lambda_client.invoke(
-            FunctionName='data_extract_events',
+            FunctionName='data_classification',
             InvocationType='RequestResponse',
             Payload=json.dumps({
                 "file_name": file_name,

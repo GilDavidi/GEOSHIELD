@@ -43,9 +43,11 @@ def lambda_handler(event, context):
             unique_id = str(uuid.uuid4())  
             # Extracting and formatting the date to include only date and hour
             date_str = message['date'].strftime("%Y-%m-%d %H:%M")
+            url = extract_url(message.get('entities', []))
             selected_message = {
                 "id": unique_id,  # Replace the original ID with the unique ID
                 "channel_id": message['peer_id']['channel_id'] if 'peer_id' in message and 'channel_id' in message['peer_id'] else None,
+                "url": url,
                 "date": date_str,
                 "message": message['message']
             }
@@ -62,6 +64,13 @@ def lambda_handler(event, context):
         "statusCode": 200,
         "body": json.dumps({"message": "Telegram messages fetched and saved to S3"})
     }
+    
+def extract_url(entities):
+    # Iterate through entities to find the URL
+    for entity in entities:
+        if entity.get('_') == 'MessageEntityTextUrl':
+            return entity.get('url', '')
+    return ''  # Return empty string if URL not found    
 
 
 async def fetch_telegram_messages(client):
