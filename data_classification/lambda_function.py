@@ -1,7 +1,11 @@
 import boto3
 import json
 import requests
+import configparser
 lambda_client = boto3.client('lambda')
+# Read configuration
+config = configparser.ConfigParser()
+config.read("config.ini")
 
 def classify_and_invoke(bucket_name, input_key, file_name):
     try:
@@ -14,8 +18,7 @@ def classify_and_invoke(bucket_name, input_key, file_name):
         messages = json.loads(json_data)
         
         # Define the endpoint of model service
-
-        model_endpoint = "http://ec2-3-252-242-32.eu-west-1.compute.amazonaws.com:8080/predict"
+        model_endpoint =  config['EC2']['URL'] 
         
         # Iterate through each message and classify it
         for message in messages:
@@ -57,6 +60,7 @@ def classify_and_invoke(bucket_name, input_key, file_name):
         
         return {"message": "Successfully invoked data_extract_location"}
     except Exception as e:
+        print("error: "+ str(e))
         return str(e)
 
 def lambda_handler(event, context):
@@ -67,24 +71,14 @@ def lambda_handler(event, context):
         file_name = inner_message_body['Records'][0]['s3']['object']['key']
     
         print("new " + file_name + " upload")
-     
-        if file_name == 'telegram_messages.json':
-            # Classify Telegram messages and invoke data_extract_location
-            result = classify_and_invoke(
-                bucket_name='raw-data-geoshield',
-                input_key='telegram_messages.json',
-                file_name=file_name
-            )
-        elif file_name == 'gdelt_articles.json':
-            # Classify GDELT articles and invoke data_extract_location
-            result = classify_and_invoke(
-                bucket_name='raw-data-geoshield',
-                input_key='gdelt_articles.json',
-                file_name=file_name
-            )
-        else:
-            raise ValueError("Unsupported file type: " + file_name)
         
+        # Classify messages and invoke data_extract_location
+        result = classify_and_invoke(
+            bucket_name='raw-data-geoshield',
+            input_key=file_name,
+            file_name=file_name
+        )
+
         return {
             "statusCode": 200,
             "body": json.dumps(result)
