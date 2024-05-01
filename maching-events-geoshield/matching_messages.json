@@ -1,102 +1,134 @@
-[
-    {
-        "message1_id": "2ef45c73-5050-4d60-93cc-f3d5afa1ee11",
-        "message2_id": "80715aa6-a53c-43ad-bc62-11db192e3804",
-        "message1": "Rafah, Gaza (CNN) \u2014 Editor\u2019s Note: Warning: This story has graphic content.\nTwenty-two people, including at least one infant and a toddler, have been killed in an Israeli airstrike over Rafah, Gaza, overnight into Monday, according to hospital officials.\nLifting the baby boy\u2019s body to the camera, Mahmoud Abu Taha cries out, \u201cthis is who they are targeting.\nAnother member of the Abu Taha family says in the video that 10 of his relatives were killed in the airstrike.\nSome of his relatives were originally displaced from Khan Younis, where several of them were killed in a previous Israeli airstrike.",
-        "message2": "Twenty-two people, including at least one infant and a toddler, have been killed in an Israeli airstrike over Rafah, Gaza, overnight into Monday, according to hospital officials.\nLifting the baby boy\u2019s body to the camera, Mahmoud Abu Taha cries out, \u201cthis is who they are targeting.\nAnother member of the Abu Taha family says in the video that 10 of his relatives were killed in the airstrike.\nSome of his relatives were originally displaced from Khan Younis, where several of them were killed in a previous Israeli airstrike.\nThe remaining few who had fled Khan Younis for the safety of Rafah have now been killed overnight in Rafah, he says.",
-        "jaccard_similarity": 0.7355371900826446,
-        "levenshtein_similarity": 0.6998444790046656,
-        "score": 0.7176908345436551,
-        "location": "Rafah, Gaza"
+{
+    "2ef45c73-5050-4d60-93cc-f3d5afa1ee11": {
+        "messages": [
+            {
+                "id": "2ef45c73-5050-4d60-93cc-f3d5afa1ee11",
+                "source": "GDELT"
+            },
+            {
+                "id": "145d37b8-d143-47c2-910d-80d481a8bbef",
+                "source": "GDELT"
+            },
+            {
+                "id": "80715aa6-a53c-43ad-bc62-11db192e3804",
+                "source": "GDELT"
+            }
+        ],
+        "total_score": 1.4081457056038271,
+        "count": 2,
+        "average_score": 0.7040728528019136,
+        "final_score": 0.5346123503540857
     },
-    {
-        "message1_id": "06527eb7-3033-4d52-afd0-e912b5d06f3e",
-        "message2_id": "757d43ec-c9de-47cf-8da2-6d90f7506e40",
-        "message1": "ODESA, Ukraine (Reuters) -A Russian missile attack on an educational institution in a popular seafront park in the Ukrainian Black Sea port of Odesa on Monday killed at least five people and injured 32, local officials said.\nReuters Television footage showed the roof of the ornate building, a private law academy, all but destroyed after the strike.\nI don't know what else to say,\" Odesa Mayor Hennadii Trukhanov said in a video posted on Telegram.\n\"In front of my eyes, a missile was shot down, this was just in front of me.\nOdesa has been a frequent target of Russian missile and drone attacks, particular port infrastructure.",
-        "message2": "By Iryna Nazarchuk ReutersA Russian missile attack on an educational institution in a popular seafront park in the Ukrainian Black Sea port of Odesa on Monday killed at least five people and injured 32, local officials said.\nReuters Television footage showed the roof of the ornate building, a private law academy, all but destroyed after the strike.\nI don\u2019t know what else to say,\u201d Odesa Mayor Hennadii Trukhanov said in a video posted on Telegram.\nPublic broadcaster Suspilne said the academy\u2019s president, a prominent former member of parliament, Serhiy Kivalov, was among the injured.\nOdesa has been a frequent target of Russian missile and drone attacks, particular port infrastructure.",
-        "jaccard_similarity": 0.6744186046511628,
-        "levenshtein_similarity": 0.8202898550724638,
-        "score": 0.7473542298618132,
-        "location": "Odesa"
+    "06527eb7-3033-4d52-afd0-e912b5d06f3e": {
+        "messages": [
+            {
+                "id": "06527eb7-3033-4d52-afd0-e912b5d06f3e",
+                "source": "GDELT"
+            },
+            {
+                "id": "e4bab925-c0f2-462f-a021-1bf47d50ea04",
+                "source": "GDELT"
+            },
+            {
+                "id": "757d43ec-c9de-47cf-8da2-6d90f7506e40",
+                "source": "GDELT"
+            }
+        ],
+        "total_score": 1.529122218114383,
+        "count": 2,
+        "average_score": 0.7645611090571915,
+        "final_score": 0.5553255475371953
     },
-    {
-        "message1_id": "a95b7c08-d8a8-4c4c-a97c-5ca9acd1d7f4",
-        "message2_id": "7dca4ec4-e902-4b0c-8fb1-5e93409379be",
-        "message1": "Jerusalem, Apr 30 (AP) A missile attack by Yemen's Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nThe ship was damaged in the attack, the UKMTO said, though its crew was safe and heading to its next port of call.\nMeanwhile Monday, the Italian Defence Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the US military shot down five drones in the air over the Red Sea, its Central Command said.",
-        "message2": "A missile attack by Yemen\u2019s Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nThe ship was damaged in the attack, the UKMTO said, though its crew was safe and heading to its next port of call.\nMeanwhile Monday, the Italian Defence Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the US military shot down five drones in the air over the Red Sea, its Central Command said.",
-        "jaccard_similarity": 0.952755905511811,
-        "levenshtein_similarity": 0.9661016949152542,
-        "score": 0.9594288002135326,
-        "location": "Red Sea"
+    "e87f2bad-2580-477a-9105-23b383881747": {
+        "messages": [
+            {
+                "id": "e87f2bad-2580-477a-9105-23b383881747",
+                "source": "GDELT"
+            },
+            {
+                "id": "a95b7c08-d8a8-4c4c-a97c-5ca9acd1d7f4",
+                "source": "GDELT"
+            },
+            {
+                "id": "010c5eb0-2c0b-45b6-ad5e-42ba832a4309",
+                "source": "GDELT"
+            },
+            {
+                "id": "369983bd-2459-4318-90c9-7a93a0be6095",
+                "source": "GDELT"
+            },
+            {
+                "id": "7dca4ec4-e902-4b0c-8fb1-5e93409379be",
+                "source": "GDELT"
+            },
+            {
+                "id": "40c8e489-9e7b-4439-89d1-9df06e81c9d1",
+                "source": "GDELT"
+            }
+        ],
+        "total_score": 3.8870951639407476,
+        "count": 5,
+        "average_score": 0.7774190327881495,
+        "final_score": 1.0
     },
-    {
-        "message1_id": "010c5eb0-2c0b-45b6-ad5e-42ba832a4309",
-        "message2_id": "369983bd-2459-4318-90c9-7a93a0be6095",
-        "message1": "JERUSALEM \u2014 A missile attack by Yemen's Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nMeanwhile Monday, the Italian Defense Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\n''The frigate Fasan and the protected merchant vessel are continuing their southward route as planned to exit the Red Sea.''\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
-        "message2": "JERUSALEM \u2014 A missile attack by Yemen's Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nMeanwhile Monday, the Italian Defense Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\n''The frigate Fasan and the protected merchant vessel are continuing their southward route as planned to exit the Red Sea.''\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
-        "jaccard_similarity": 1.0,
-        "levenshtein_similarity": 1.0,
-        "score": 1.0,
-        "location": "Red Sea"
+    "f88ec86f-2e05-40c7-80db-02081f9e0345": {
+        "messages": [
+            {
+                "id": "f88ec86f-2e05-40c7-80db-02081f9e0345",
+                "source": "GDELT"
+            },
+            {
+                "id": "117097a7-0de3-4730-b534-8fb245d6b1c8",
+                "source": "GDELT"
+            }
+        ],
+        "total_score": 1.0,
+        "count": 1,
+        "average_score": 1.0,
+        "final_score": 0.489190522624374
     },
-    {
-        "message1_id": "369983bd-2459-4318-90c9-7a93a0be6095",
-        "message2_id": "58b77582-f5f2-460b-ba3d-0750949b7478",
-        "message1": "JERUSALEM \u2014 A missile attack by Yemen's Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against shipping in the crucial maritime route.\nMeanwhile Monday, the Italian Defense Ministry said its frigate Virgino Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\n''The frigate Fasan and the protected merchant vessel are continuing their southward route as planned to exit the Red Sea.''\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
-        "message2": "Open this photo in gallery: Yemen's capital Sana'a is seen on a map.The Associated PressA suspected missile attack by Yemen\u2019s Houthi rebels damaged a ship in the Red Sea on Monday, authorities said, the latest assault in their campaign against international shipping in the crucial maritime route.\nMeanwhile Monday, the Italian Defence Ministry said its frigate Virginio Fasan shot down a Houthi drone that morning near the Bab el-Mandeb Strait between the Red Sea and the Gulf of Aden.\nHouthi attacks have dropped in recent weeks as the rebels have been targeted by a U.S.-led air strike campaign in Yemen.\nShipping through the Red Sea and Gulf of Aden has declined because of the threat.\nEarly Sunday morning, the U.S. military shot down five drones in the air over the Red Sea, its Central Command said.",
-        "jaccard_similarity": 0.6163522012578616,
-        "levenshtein_similarity": 0.7406947890818858,
-        "score": 0.6785234951698738,
-        "location": "Sana'a"
+    "a7964321-5a51-4069-aa0d-a4e23013152e": {
+        "messages": [
+            {
+                "id": "a7964321-5a51-4069-aa0d-a4e23013152e",
+                "source": "GDELT"
+            },
+            {
+                "id": "a84d96be-0453-47e2-9903-b6ad9bc0267b",
+                "source": "GDELT"
+            },
+            {
+                "id": "60cf3fd8-b7d5-4fde-9a0f-49befe0758d3",
+                "source": "GDELT"
+            },
+            {
+                "id": "358d2c19-0bab-413b-9d38-6040afb46ce6",
+                "source": "GDELT"
+            }
+        ],
+        "total_score": 2.9051700756728254,
+        "count": 3,
+        "average_score": 0.9683900252242751,
+        "final_score": 0.7718805261425222
     },
-    {
-        "message1_id": "f88ec86f-2e05-40c7-80db-02081f9e0345",
-        "message2_id": "117097a7-0de3-4730-b534-8fb245d6b1c8",
-        "message1": "A day of mourning has been declared in the Ukrainian port city of Odesa after a Russian missile strike killed five people and left 32 other injured.\n\u2014 Sam MeredithRussia says it shot down U.S.-supplied ATACMS missilesRussia said it shot down six U.S.-supplied long-range missiles, known as Army Tactical Missile Systems, or ATACMS, over the past day.\nIt's uncertain how many ATACMS missiles Ukraine was given.\n\"After the ATACMS missiles were shot down, the undetonated submunitions scattered,\" he said, warning civilians not to touch or approach any unspent submunitions.\nThe U.S.-provided Army Tactical Missile System, known as ATACMS, has since been used to strikes targets in Russian-occupied territory.",
-        "message2": "A day of mourning has been declared in the Ukrainian port city of Odesa after a Russian missile strike killed five people and left 32 other injured.\n\u2014 Sam MeredithRussia says it shot down U.S.-supplied ATACMS missilesRussia said it shot down six U.S.-supplied long-range missiles, known as Army Tactical Missile Systems, or ATACMS, over the past day.\nIt's uncertain how many ATACMS missiles Ukraine was given.\n\"After the ATACMS missiles were shot down, the undetonated submunitions scattered,\" he said, warning civilians not to touch or approach any unspent submunitions.\nThe U.S.-provided Army Tactical Missile System, known as ATACMS, has since been used to strikes targets in Russian-occupied territory.",
-        "jaccard_similarity": 1.0,
-        "levenshtein_similarity": 1.0,
-        "score": 1.0,
-        "location": "ODESA"
-    },
-    {
-        "message1_id": "a7964321-5a51-4069-aa0d-a4e23013152e",
-        "message2_id": "358d2c19-0bab-413b-9d38-6040afb46ce6",
-        "message1": "At least five people were killed and more than 30 injured in a Russian missile attack on the Black Sea port city of Odesa on Monday, Ukrainian authorities say.\nUkrainian authorities believe Russia used an Iskander ballistic missile and cluster munitions to carry out the attack.\nHe added that \u201cthe investigation has grounds to believe\u201d the Russian military used cluster munitions with the intention of inflicting large number of casualties.\nThe use, transfer, and production of cluster munitions is prohibited by an international treaty known as the Convention on Cluster Munitions.\nRussia claims interceptMeanwhile, Russian officials say air defenses in Crimea succeeded in intercepting a major missile and drone attack by Ukraine.",
-        "message2": "(CNN) \u2014 At least five people were killed and more than 30 injured in a Russian missile attack on the Black Sea port city of Odesa on Monday, Ukrainian authorities say.\nUkrainian authorities believe Russia used an Iskander ballistic missile and cluster munitions to carry out the attack.\nHe added that \u201cthe investigation has grounds to believe\u201d the Russian military used cluster munitions with the intention of inflicting large number of casualties.\nThe use, transfer, and production of cluster munitions is prohibited by an international treaty known as the Convention on Cluster Munitions.\nRussia claims interceptMeanwhile, Russian officials say air defenses in Crimea succeeded in intercepting a major missile and drone attack by Ukraine.",
-        "jaccard_similarity": 0.9824561403508771,
-        "levenshtein_similarity": 0.9891891891891892,
-        "score": 0.9858226647700332,
-        "location": "ODESA"
-    },
-    {
-        "message1_id": "a84d96be-0453-47e2-9903-b6ad9bc0267b",
-        "message2_id": "358d2c19-0bab-413b-9d38-6040afb46ce6",
-        "message1": "CNN \u2014At least five people were killed and more than 30 injured in a Russian missile attack on the Black Sea port city of Odesa on Monday, Ukrainian authorities say.\nUkrainian authorities believe Russia used an Iskander ballistic missile and cluster munitions to carry out the attack.\nHe added that \u201cthe investigation has grounds to believe\u201d the Russian military used cluster munitions with the intention of inflicting large number of casualties.\nThe use, transfer, and production of cluster munitions is prohibited by an international treaty known as the Convention on Cluster Munitions.\nRussia claims interceptMeanwhile, Russian officials say air defenses in Crimea succeeded in intercepting a major missile and drone attack by Ukraine.",
-        "message2": "(CNN) \u2014 At least five people were killed and more than 30 injured in a Russian missile attack on the Black Sea port city of Odesa on Monday, Ukrainian authorities say.\nUkrainian authorities believe Russia used an Iskander ballistic missile and cluster munitions to carry out the attack.\nHe added that \u201cthe investigation has grounds to believe\u201d the Russian military used cluster munitions with the intention of inflicting large number of casualties.\nThe use, transfer, and production of cluster munitions is prohibited by an international treaty known as the Convention on Cluster Munitions.\nRussia claims interceptMeanwhile, Russian officials say air defenses in Crimea succeeded in intercepting a major missile and drone attack by Ukraine.",
-        "jaccard_similarity": 0.9568965517241379,
-        "levenshtein_similarity": 0.995945945945946,
-        "score": 0.9764212488350419,
-        "location": "ODESA"
-    },
-    {
-        "message1_id": "b8d65bca-5f32-4418-b428-3d23e3cc02e1",
-        "message2_id": "566d7edf-a8a7-47f3-9180-55961d74656a",
-        "message1": "JERUSALEM \u2014 A Portuguese-flagged container ship came under attack by a drone in the far reaches of the Arabian Sea, corresponding with a claim by Yemen's Houthi rebels that they assaulted the ship there, authorities said Tuesday.\nThe MSC Orion has been associated with London-based Zodiac Maritime, which is part of Israeli billionaire Eyal Ofer\u2019s Zodiac Group.\nThe Joint Maritime Information Center assesses \u201cthat MSC Orion was likely targeted due to (its) perceived Israeli affiliation,\u201d the center said in a report.\nGen. Yahya Saree, a military spokesman for Yemen's Houthi rebels, claimed the attack on the Orion early Tuesday.\nThose are close to Yemen's shoreline \u2014 unlike the site of the MSC Orion attack.",
-        "message2": "JERUSALEM \u2013 A Portuguese-flagged container ship came under attack by a drone in the far reaches of the Arabian Sea, corresponding with a claim by Yemen's Houthi rebels that they assaulted the ship there, authorities said Tuesday.\nThe MSC Orion has been associated with London-based Zodiac Maritime, which is part of Israeli billionaire Eyal Ofer\u2019s Zodiac Group.\nThe Joint Maritime Information Center assesses \u201cthat MSC Orion was likely targeted due to (its) perceived Israeli affiliation,\u201d the center said in a report.\nThose are close to Yemen's shoreline \u2014 unlike the site of the MSC Orion attack.\nOn Tuesday, the rebels released footage of their drone attack on the Cyclades, a Malta-flagged, Greece-owned bulk carrier, the day before.",
-        "jaccard_similarity": 0.7633587786259542,
-        "levenshtein_similarity": 0.7761194029850746,
-        "score": 0.7697390908055144,
-        "location": "far reaches of the Arabian Sea"
-    },
-    {
-        "message1_id": "60cf3fd8-b7d5-4fde-9a0f-49befe0758d3",
-        "message2_id": "358d2c19-0bab-413b-9d38-6040afb46ce6",
-        "message1": "By Radina Gigova and Olga Voitovych, CNN(CNN) \u2014 At least five people were killed and more than 30 injured in a Russian missile attack on the Black Sea port city of Odesa on Monday, Ukrainian authorities say.\nUkrainian authorities believe Russia used an Iskander ballistic missile and cluster munitions to carry out the attack.\nHe added that \u201cthe investigation has grounds to believe\u201d the Russian military used cluster munitions with the intention of inflicting large number of casualties.\nThe use, transfer, and production of cluster munitions is prohibited by an international treaty known as the Convention on Cluster Munitions.\nRussia claims interceptMeanwhile, Russian officials say air defenses in Crimea succeeded in intercepting a major missile and drone attack by Ukraine.",
-        "message2": "(CNN) \u2014 At least five people were killed and more than 30 injured in a Russian missile attack on the Black Sea port city of Odesa on Monday, Ukrainian authorities say.\nUkrainian authorities believe Russia used an Iskander ballistic missile and cluster munitions to carry out the attack.\nHe added that \u201cthe investigation has grounds to believe\u201d the Russian military used cluster munitions with the intention of inflicting large number of casualties.\nThe use, transfer, and production of cluster munitions is prohibited by an international treaty known as the Convention on Cluster Munitions.\nRussia claims interceptMeanwhile, Russian officials say air defenses in Crimea succeeded in intercepting a major missile and drone attack by Ukraine.",
-        "jaccard_similarity": 0.9338842975206612,
-        "levenshtein_similarity": 0.9487179487179487,
-        "score": 0.9413011231193049,
-        "location": "ODESA"
+    "b8d65bca-5f32-4418-b428-3d23e3cc02e1": {
+        "messages": [
+            {
+                "id": "b8d65bca-5f32-4418-b428-3d23e3cc02e1",
+                "source": "GDELT"
+            },
+            {
+                "id": "566d7edf-a8a7-47f3-9180-55961d74656a",
+                "source": "GDELT"
+            },
+            {
+                "id": "75d8955d-d1db-4a12-bec7-daa56cf53969",
+                "source": "GDELT"
+            }
+        ],
+        "total_score": 1.5144047125401017,
+        "count": 2,
+        "average_score": 0.7572023562700508,
+        "final_score": 0.5528056650519318
     }
-]
+}
