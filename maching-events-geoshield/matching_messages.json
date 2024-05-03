@@ -1,134 +1,86 @@
 {
-    "2ef45c73-5050-4d60-93cc-f3d5afa1ee11": {
+    "be3c48fa-aa37-480f-8d53-c0ea063c1f66": {
         "messages": [
             {
-                "id": "2ef45c73-5050-4d60-93cc-f3d5afa1ee11",
+                "id": "be3c48fa-aa37-480f-8d53-c0ea063c1f66",
                 "source": "GDELT"
             },
             {
-                "id": "145d37b8-d143-47c2-910d-80d481a8bbef",
-                "source": "GDELT"
-            },
-            {
-                "id": "80715aa6-a53c-43ad-bc62-11db192e3804",
+                "id": "3e3bbe7d-9882-4acb-a3ce-f4a534508f6c",
                 "source": "GDELT"
             }
         ],
-        "total_score": 1.4081457056038271,
-        "count": 2,
-        "average_score": 0.7040728528019136,
-        "final_score": 0.5346123503540857
+        "total_score": 0.6665658263305322,
+        "count": 1,
+        "average_score": 0.6665658263305322,
+        "final_score": 0.589689291101056
     },
-    "06527eb7-3033-4d52-afd0-e912b5d06f3e": {
+    "67621dea-fd5a-48ab-9e18-394c9c1fd6ab": {
         "messages": [
             {
-                "id": "06527eb7-3033-4d52-afd0-e912b5d06f3e",
+                "id": "67621dea-fd5a-48ab-9e18-394c9c1fd6ab",
                 "source": "GDELT"
             },
             {
-                "id": "e4bab925-c0f2-462f-a021-1bf47d50ea04",
+                "id": "ca64b60d-53b8-4bdd-9f2b-3fa27a75c5b0",
                 "source": "GDELT"
             },
             {
-                "id": "757d43ec-c9de-47cf-8da2-6d90f7506e40",
+                "id": "78c5d253-047a-4a8a-8fb7-99b10cc853bf",
                 "source": "GDELT"
             }
         ],
-        "total_score": 1.529122218114383,
+        "total_score": 2.0,
         "count": 2,
-        "average_score": 0.7645611090571915,
-        "final_score": 0.5553255475371953
-    },
-    "e87f2bad-2580-477a-9105-23b383881747": {
-        "messages": [
-            {
-                "id": "e87f2bad-2580-477a-9105-23b383881747",
-                "source": "GDELT"
-            },
-            {
-                "id": "a95b7c08-d8a8-4c4c-a97c-5ca9acd1d7f4",
-                "source": "GDELT"
-            },
-            {
-                "id": "010c5eb0-2c0b-45b6-ad5e-42ba832a4309",
-                "source": "GDELT"
-            },
-            {
-                "id": "369983bd-2459-4318-90c9-7a93a0be6095",
-                "source": "GDELT"
-            },
-            {
-                "id": "7dca4ec4-e902-4b0c-8fb1-5e93409379be",
-                "source": "GDELT"
-            },
-            {
-                "id": "40c8e489-9e7b-4439-89d1-9df06e81c9d1",
-                "source": "GDELT"
-            }
-        ],
-        "total_score": 3.8870951639407476,
-        "count": 5,
-        "average_score": 0.7774190327881495,
+        "average_score": 1.0,
         "final_score": 1.0
     },
-    "f88ec86f-2e05-40c7-80db-02081f9e0345": {
+    "0a9f119d-fbef-4914-8279-27ba4df5ef76": {
         "messages": [
             {
-                "id": "f88ec86f-2e05-40c7-80db-02081f9e0345",
+                "id": "0a9f119d-fbef-4914-8279-27ba4df5ef76",
                 "source": "GDELT"
             },
             {
-                "id": "117097a7-0de3-4730-b534-8fb245d6b1c8",
+                "id": "cd3f7a4b-68d8-40b5-b8ba-ab438f537cb1",
+                "source": "GDELT"
+            }
+        ],
+        "total_score": 0.8961295614994531,
+        "count": 1,
+        "average_score": 0.8961295614994531,
+        "final_score": 0.7133005331150902
+    },
+    "9acac758-c034-46da-9a25-ef8cc39c7368": {
+        "messages": [
+            {
+                "id": "9acac758-c034-46da-9a25-ef8cc39c7368",
+                "source": "GDELT"
+            },
+            {
+                "id": "e87a1b35-7d63-4d68-9443-7e12ed17132d",
                 "source": "GDELT"
             }
         ],
         "total_score": 1.0,
         "count": 1,
         "average_score": 1.0,
-        "final_score": 0.489190522624374
+        "final_score": 0.7692307692307694
     },
-    "a7964321-5a51-4069-aa0d-a4e23013152e": {
+    "c612cf8a-3a30-4d17-b904-95dd0745e186": {
         "messages": [
             {
-                "id": "a7964321-5a51-4069-aa0d-a4e23013152e",
+                "id": "c612cf8a-3a30-4d17-b904-95dd0745e186",
                 "source": "GDELT"
             },
             {
-                "id": "a84d96be-0453-47e2-9903-b6ad9bc0267b",
-                "source": "GDELT"
-            },
-            {
-                "id": "60cf3fd8-b7d5-4fde-9a0f-49befe0758d3",
-                "source": "GDELT"
-            },
-            {
-                "id": "358d2c19-0bab-413b-9d38-6040afb46ce6",
+                "id": "410419a9-9565-4999-b863-2c3e7f6c4806",
                 "source": "GDELT"
             }
         ],
-        "total_score": 2.9051700756728254,
-        "count": 3,
-        "average_score": 0.9683900252242751,
-        "final_score": 0.7718805261425222
-    },
-    "b8d65bca-5f32-4418-b428-3d23e3cc02e1": {
-        "messages": [
-            {
-                "id": "b8d65bca-5f32-4418-b428-3d23e3cc02e1",
-                "source": "GDELT"
-            },
-            {
-                "id": "566d7edf-a8a7-47f3-9180-55961d74656a",
-                "source": "GDELT"
-            },
-            {
-                "id": "75d8955d-d1db-4a12-bec7-daa56cf53969",
-                "source": "GDELT"
-            }
-        ],
-        "total_score": 1.5144047125401017,
-        "count": 2,
-        "average_score": 0.7572023562700508,
-        "final_score": 0.5528056650519318
+        "total_score": 1.0,
+        "count": 1,
+        "average_score": 1.0,
+        "final_score": 0.7692307692307694
     }
 }

@@ -2,16 +2,37 @@ import boto3
 import json
 import requests
 import configparser
+import re
+
 lambda_client = boto3.client('lambda')
+
 # Read configuration
 config = configparser.ConfigParser()
 config.read("config.ini")
 
+def extract_category(file_name):
+    # Split the file name by underscore to separate words
+    words = file_name.split('_')
+    
+    # The category is the second-to-last word before the .json extension
+    category = words[-1].split('.')[0]
+    
+    if category:
+        return category
+    else:
+        return None
+
 def classify_and_invoke(messages, file_name):
     try:
+        # Define the endpoint of the model service
+        model_endpoint = config['EC2']['URL']
         
-        # Define the endpoint of model service
-        model_endpoint =  config['EC2']['URL'] 
+        # Extract category from the file name
+        category = extract_category(file_name)
+        print(category)
+        if category is None:
+            print("Error: Could not extract category from file name.")
+            return {"error": "Could not extract category from file name."}
         
         # Iterate through each message and classify it
         for message in messages:
@@ -34,35 +55,41 @@ def classify_and_invoke(messages, file_name):
                     predicted_category = model_output.get("Predicted", None)
                     score = model_output.get("Score", None)
                     
-                    # Add classification and score to the original message
-                    message['classification'] = predicted_category
-                    message['score'] = score
+                    # Check if predicted category matches the file category
+                    if predicted_category == category:
+                        # Add classification and score to the original message
+                        message['classification'] = predicted_category
+                        message['score'] = score
+                    else:
+                        # If predicted category does not match, skip inserting it to the message
+                        message['classification'] = None
+                        message['score'] = None
         
-        # Prepare payload for next Lambda function
+        # Prepare payload for the next Lambda function
         payload = {
             'file_name': file_name,
-            'messages': messages
+            'messages': [msg for msg in messages if msg.get('classification') is not None]
         }
         
         # Invoke the destination Lambda function
         lambda_client.invoke(
             FunctionName='data_extract_events',
-            InvocationType='Event',  
+            InvocationType='Event',
             Payload=json.dumps(payload)
         )
         
         print("Successfully invoked data_extract_events")
         return {"message": "Successfully invoked data_extract_events"}
     except Exception as e:
-        print("error: "+ str(e))
-        return str(e)
+        print("Error: " + str(e))
+        return {"error": str(e)}
 
 def lambda_handler(event, context):
     try:
         # Extracting object key and messages from the event
         file_name = event['file_name']
         messages = event['messages']
-        print("new " + file_name + " upload")
+        print("New " + file_name + " upload")
         
         # Classify messages and invoke data_extract_location
         result = classify_and_invoke(
@@ -75,7 +102,7 @@ def lambda_handler(event, context):
             "body": json.dumps(result)
         }
     except Exception as e:
-        print("error: "+ str(e))
+        print("Error: " + str(e))
         return {
             "statusCode": 500,
             "body": json.dumps({"error": str(e)})

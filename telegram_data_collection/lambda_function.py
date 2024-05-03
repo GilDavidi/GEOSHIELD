@@ -15,56 +15,82 @@ s3 = boto3.client('s3')
 
 # Lambda handler function
 def lambda_handler(event, context):
+    try:
+        # Reading Configs
+        category = event['category']
+        config = configparser.ConfigParser()
+        config.read("config.ini")
+        api_id = config['Telegram']['api_id']
+        api_hash = config['Telegram']['api_hash']
+        string_session = config['Telegram']['string_session']
+        bucket_name = config['S3']['bucket_name']
+        
+        # Create the TelegramClient using the StringSession
+        client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
-    # Reading Configs
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-    api_id = config['Telegram']['api_id']
-    api_hash = config['Telegram']['api_hash']
-    string_session = config['Telegram']['string_session']
-    bucket_name = config['S3']['bucket_name']
-    
-    # Create the TelegramClient using the StringSession
-    client = TelegramClient(StringSession(string_session), api_id, api_hash)
+        # Running the asyncio loop
+        all_messages = asyncio.get_event_loop().run_until_complete(fetch_telegram_messages(client))
 
-    # Running the asyncio loop
-    all_messages = asyncio.get_event_loop().run_until_complete(fetch_telegram_messages(client))
+        print("Telegram messages fetched.")
 
-    print("Lambda handler execution completed.")
+        # Create a list to hold selected messages
+        selected_messages = []
 
-    # Create a list to hold selected messages
-    selected_messages = []
+        # Iterate through all messages and extract required fields
+        for message in all_messages:
+            # Exclude empty messages
+            if message.get('message'):
+                # Generate a unique ID for each message
+                unique_id = str(uuid.uuid4())  
+                # Extracting and formatting the date to include only date and hour
+                date_str = message['date'].strftime("%Y-%m-%d %H:%M")
+                url = extract_url(message.get('entities', []))
+                selected_message = {
+                    "id": unique_id,  # Replace the original ID with the unique ID
+                    "channel_id": message['peer_id']['channel_id'] if 'peer_id' in message and 'channel_id' in message['peer_id'] else None,
+                    "url": url,
+                    "date": date_str,
+                    "message": message['message']
+                }
+                selected_messages.append(selected_message)
 
-    # Iterate through all messages and extract required fields
-    for message in all_messages:
-        # Exclude empty messages
-        if message.get('message'):
-            # Generate a unique ID for each message
-            unique_id = str(uuid.uuid4())  
-            # Extracting and formatting the date to include only date and hour
-            date_str = message['date'].strftime("%Y-%m-%d %H:%M")
-            url = extract_url(message.get('entities', []))
-            selected_message = {
-                "id": unique_id,  # Replace the original ID with the unique ID
-                "channel_id": message['peer_id']['channel_id'] if 'peer_id' in message and 'channel_id' in message['peer_id'] else None,
-                "url": url,
-                "date": date_str,
-                "message": message['message']
+        # Convert the list of selected messages to JSON
+        json_data = json.dumps(selected_messages)
+
+        # Adjust the file name to include the category
+        file_name = f'telegram_messages_{category}.json'
+
+        # Upload the JSON data to the S3 bucket with the adjusted file name
+        upload_byte_stream = bytes(json_data.encode('UTF-8'))
+        s3.put_object(Bucket=bucket_name, Key=file_name, Body=upload_byte_stream)
+
+        # Add tags to the uploaded S3 object
+        s3.put_object_tagging(
+            Bucket=bucket_name,
+            Key=file_name,
+            Tagging={
+                'TagSet': [
+                    {
+                        'Key': 'Category',
+                        'Value': category
+                    }
+                ]
             }
-            selected_messages.append(selected_message)
+        )
 
-    # Convert the list of selected messages to JSON
-    json_data = json.dumps(selected_messages)
+        print(f"Telegram messages saved to S3 with category: {category}")
 
-    # Upload the JSON data to the S3 bucket
-    upload_byte_stream = bytes(json_data.encode('UTF-8'))
-    s3.put_object(Bucket=bucket_name, Key='telegram_messages.json', Body=upload_byte_stream)
-
-    return {
-        "statusCode": 200,
-        "body": json.dumps({"message": "Telegram messages fetched and saved to S3"})
-    }
-    
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"message": "Telegram messages fetched and saved to S3 with category"})
+        }
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)})
+        }
+        
 def extract_url(entities):
     # Iterate through entities to find the URL
     for entity in entities:

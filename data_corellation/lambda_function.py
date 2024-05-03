@@ -72,14 +72,30 @@ def upload_to_s3(bucket_name, file_key, file_path):
     s3.upload_file(file_path, bucket_name, file_key)
 
 def lambda_handler(event, context):
-    # S3 bucket name and file keys
+    # S3 bucket name
     input_bucket_name = "classified-data-geoshield"
     output_bucket_name = "maching-events-geoshield"
-    telegram_file_key = "telegram_messages_classified.json"
-    gdelt_file_key = "gdelt_articles_classified.json"
     
-
+    # List objects in the bucket
+    s3 = boto3.client('s3')
+    response = s3.list_objects_v2(Bucket=input_bucket_name)
+    
+    # Extract file keys and timestamps
+    file_timestamps = {}
+    for obj in response.get('Contents', []):
+        file_key = obj['Key']
+        timestamp = obj['LastModified']
+        file_timestamps[file_key] = timestamp
+    
+    # Sort files by timestamp in descending order
+    sorted_files = sorted(file_timestamps.items(), key=lambda x: x[1], reverse=True)
+    
+    # Select the newest two files
+    newest_files = sorted_files[:2]
+    
     # Load JSON files from S3
+    gdelt_file_key = newest_files[0][0]
+    telegram_file_key = newest_files[1][0]
     gdelt_messages = load_json_from_s3(input_bucket_name, gdelt_file_key)
     telegram_messages = load_json_from_s3(input_bucket_name, telegram_file_key)
 

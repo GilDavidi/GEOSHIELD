@@ -3,7 +3,6 @@ import boto3
 from datetime import datetime
 import requests
 import configparser
-from newspaper import Article
 
 # AWS S3 client
 s3 = boto3.client('s3')
@@ -29,13 +28,14 @@ def lambda_handler(event, context):
         json_data = json.dumps(article_list)
         
         # Invoke destination Lambda function
-        invoke_destination_lambda(json_data)
+        invoke_destination_lambda(json_data,category)
 
         return {
             "statusCode": 200,
             "body": json.dumps({"message": f"{category.capitalize()} GDELT articles fetched and sent to destination Lambda"})
         }
     except KeyError as e:
+        print("error:" + str(e))
         return {
             "errorMessage": str(e),
             "errorType": type(e)._name_
@@ -55,7 +55,6 @@ def make_gdelt_request(config, category):
     }
 
     url = gdelt_api_url + '?' + '&'.join([f'{key}={value}' for key, value in params.items()])
-    print(url)
     response = requests.get(url)
 
     if response.status_code == 200:
@@ -79,10 +78,10 @@ def extract_articles(articles):
 
     return extracted_articles
 
-def invoke_destination_lambda(json_data):
+def invoke_destination_lambda(json_data,category):
     # Invoke the destination Lambda function
     lambda_client.invoke(
         FunctionName='summarize_articles_gdelt',
         InvocationType='Event',  # Asynchronous invocation
-        Payload=json.dumps({'json_data': json_data})
+        Payload=json.dumps({'category': category, 'json_data': json_data})
     )
