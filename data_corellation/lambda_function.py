@@ -23,8 +23,12 @@ def generate_message_buckets(messages, similarity_threshold=0.6):
             message_buckets[message1["id"]] = {
                 "messages": [{
                     "id": message1["id"],
+                    "message": message1["message"],
+                    "url": message1["url"],
+                    "date":message1["date"],
                     "source": source
                 }],
+                "location":message1["location"],
                 "total_score": 0,
                 "count": 0
             }
@@ -49,6 +53,9 @@ def generate_message_buckets(messages, similarity_threshold=0.6):
                             source = "Telegram" if "channel_id" in message2 else "GDELT"
                             message_buckets[message1["id"]]["messages"].append({
                                 "id": message2["id"],
+                                "message": message2["message"],
+                                "url": message2["url"],
+                                "date":message2["date"],
                                 "source": source
                             })
                             message_buckets[message1["id"]]["total_score"] += (jaccard_sim + levenshtein_sim) / 2

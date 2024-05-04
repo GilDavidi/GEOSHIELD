@@ -22,8 +22,9 @@ def remove_duplicate_urls(messages):
 
 def lambda_handler(event, context):
     try:
-        # S3 bucket name
+        # S3 bucket names
         classified_bucket = "classified-data-geoshield"
+        matching_bucket = "maching-events-geoshield"
 
         # Get the query parameters
         query_params = event.get('queryStringParameters', {})
@@ -43,33 +44,49 @@ def lambda_handler(event, context):
                 }
             }
 
-        # Get the list of objects in the S3 bucket
+        # Get the list of objects in the S3 buckets
         s3 = boto3.client('s3')
-        response = s3.list_objects_v2(Bucket=classified_bucket)
+        response_classified = s3.list_objects_v2(Bucket=classified_bucket)
 
-        # Filter files by last modified date and category
+        # Filter files by last modified date and category for classified bucket
         filtered_files = []
-        if 'Contents' in response:
-            for file in response['Contents']:
+        if 'Contents' in response_classified:
+            for file in response_classified['Contents']:
                 last_modified = file['LastModified']
                 last_modified_date = last_modified.strftime('%Y-%m-%d')
                 if start_date <= last_modified_date <= end_date and category in file['Key']:
                     filtered_files.append(file['Key'])
 
-        # Load JSON files from S3 bucket
-        filtered_messages = []
+        # Load JSON files from classified bucket
+        gdelt_articles = []
+        telegram_messages = []
         for file_key in filtered_files:
             json_data = load_json_from_s3(classified_bucket, file_key)
             # Filter out messages occurred before start_date
             json_data_filtered = [msg for msg in json_data if msg.get('date') >= start_date]
-            filtered_messages.extend(json_data_filtered)
+            if 'gdelt' in file_key:
+                gdelt_articles.extend(json_data_filtered)
+            elif 'telegram' in file_key:
+                telegram_messages.extend(json_data_filtered)
 
         # Remove duplicate messages based on URL
-        unique_messages = remove_duplicate_urls(filtered_messages)
+        gdelt_articles = remove_duplicate_urls(gdelt_articles)
+        telegram_messages = remove_duplicate_urls(telegram_messages)
+
+        # Load JSON file from matching bucket
+        matching_messages = []
+        matching_file_key = "matching_messages.json"
+        matching_json_data = load_json_from_s3(matching_bucket, matching_file_key)
+
+        response_body = {
+            'gdelt_articles': gdelt_articles,
+            'telegram_messages': telegram_messages,
+            'matching_messages': matching_json_data
+        }
 
         return {
             'statusCode': 200,
-            'body': json.dumps(unique_messages),
+            'body': json.dumps(response_body),
             'headers': {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
