@@ -1,5 +1,6 @@
 import json
 import boto3
+import uuid
 import concurrent.futures
 from g4f.client import Client
 from datetime import datetime
@@ -33,6 +34,8 @@ def process_message(message):
     
     return message
 
+import uuid
+
 def lambda_handler(event, context):
     try:
         s3 = boto3.client('s3')
@@ -51,11 +54,11 @@ def lambda_handler(event, context):
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             processed_messages = list(executor.map(process_message, messages))
         
-        # Get current date and time
-        current_datetime = datetime.now().strftime('%Y-%m-%d_%H-%M')
+        # Generate a UUID for the output key
+        output_uuid = str(uuid.uuid4())
         
-        # Save updated messages to S3 with current date and time appended to the filename
-        output_key = f"{file_name.split('.')[0]}_{current_datetime}.json"
+        # Save updated messages to S3 with UUID appended to the filename
+        output_key = f"{file_name.split('.')[0]}_{output_uuid}.json"
         s3.put_object(Bucket=bucket_name, Key=output_key, Body=json.dumps(processed_messages))
         
         print("classified " + file_name + " processed and saved successfully!")
