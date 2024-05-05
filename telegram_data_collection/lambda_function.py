@@ -8,21 +8,34 @@ from telethon.tl.functions.messages import SearchRequest
 from telethon.tl.types import PeerChannel, InputMessagesFilterEmpty
 from telethon.sessions import StringSession
 import boto3
-import uuid 
+import uuid
 
 # AWS S3 client
 s3 = boto3.client('s3')
 
+# AWS Secrets Manager client
+secrets_client = boto3.client('secretsmanager')
+
 # Lambda handler function
 def lambda_handler(event, context):
     try:
+        # Retrieve Telegram secrets from AWS Secrets Manager
+        secret_name = "telegram_secrets"
+        region_name = "eu-west-1"
+
+        get_secret_value_response = secrets_client.get_secret_value(
+            SecretId=secret_name
+        )
+        
+        secret = json.loads(get_secret_value_response['SecretString'])
+        api_id = secret['api_id']
+        api_hash = secret['api_hash']
+        string_session = secret['string_session']
+        
         # Reading Configs
         category = event['category']
         config = configparser.ConfigParser()
         config.read("config.ini")
-        api_id = config['Telegram']['api_id']
-        api_hash = config['Telegram']['api_hash']
-        string_session = config['Telegram']['string_session']
         bucket_name = config['S3']['bucket_name']
         
         # Create the TelegramClient using the StringSession
@@ -57,9 +70,10 @@ def lambda_handler(event, context):
         # Convert the list of selected messages to JSON
         json_data = json.dumps(selected_messages)
 
-        # Adjust the file name to include the category
-        file_name = f'telegram_messages_{category}.json'
+        # Adjust the file name to include the UUID
+        file_name = f'telegram_messages_{str(uuid.uuid4())}.json'
 
+        
         # Upload the JSON data to the S3 bucket with the adjusted file name
         upload_byte_stream = bytes(json_data.encode('UTF-8'))
         s3.put_object(Bucket=bucket_name, Key=file_name, Body=upload_byte_stream)

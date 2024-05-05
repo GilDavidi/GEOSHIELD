@@ -9,34 +9,10 @@ lambda_client = boto3.client('lambda')
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-def extract_category(file_name):
-    try:
-        # Split the file name by underscore to separate words
-        words = file_name.split('_')
-
-        # The category is the second-to-last word before the .json extension
-        category = words[-1].split('.')[0]
-
-        if category:
-            return category
-        else:
-            print("Error: Could not extract category from file name.")
-            return None
-    except Exception as e:
-        print("Error extracting category:", e)
-        return None
-
-def classify_and_invoke(messages, file_name):
+def classify_and_invoke(messages, file_name, category):
     try:
         # Define the endpoint of the model service
         model_endpoint = config['EC2']['URL']
-
-        # Extract category from the file name
-        category = extract_category(file_name)
-        print("Category:", category)
-        if category is None:
-            print("Error: Could not extract category from file name.")
-            return {"error": "Could not extract category from file name."}
 
         # Iterate through each message and classify it
         for message in messages:
@@ -72,6 +48,7 @@ def classify_and_invoke(messages, file_name):
         # Prepare payload for the next Lambda function
         payload = {
             'file_name': file_name,
+            'category': category,
             'messages': [msg for msg in messages if msg.get('classification') is not None]
         }
 
@@ -93,12 +70,14 @@ def lambda_handler(event, context):
         # Extracting object key and messages from the event
         file_name = event['file_name']
         messages = event['messages']
+        category = event['category']
         print("New " + file_name + " upload")
 
         # Classify messages and invoke data_extract_location
         result = classify_and_invoke(
             messages=messages,
-            file_name=file_name
+            file_name=file_name,
+            category=category  # Pass the category from the event
         )
 
         return {

@@ -49,9 +49,9 @@ def lambda_handler(event, context):
                 }
             }
 
-        # Get the list of objects in the S3 buckets
+        # Get the list of objects in the S3 buckets including their tags
         s3 = boto3.client('s3')
-        response_classified = s3.list_objects_v2(Bucket=classified_bucket)
+        response_classified = s3.list_objects_v2(Bucket=classified_bucket, FetchOwner=True)
 
         # Filter files by last modified date and category for classified bucket
         filtered_files = []
@@ -59,8 +59,13 @@ def lambda_handler(event, context):
             for file in response_classified['Contents']:
                 last_modified = file['LastModified']
                 last_modified_date = last_modified.strftime('%Y-%m-%d')
-                if start_date <= last_modified_date <= end_date and category in file['Key']:
-                    filtered_files.append(file['Key'])
+                if start_date <= last_modified_date <= end_date:
+                    # Get tags for the object
+                    tags_response = s3.get_object_tagging(Bucket=classified_bucket, Key=file['Key'])
+                    object_tags = tags_response.get('TagSet', [])
+                    # Check if the object has a 'category' tag and it matches the specified category
+                    if any(tag['Key'] == 'Category' and tag['Value'] == category for tag in object_tags):
+                        filtered_files.append(file['Key'])
 
         # Load JSON files from classified bucket
         gdelt_articles = []

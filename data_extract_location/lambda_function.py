@@ -42,7 +42,6 @@ def process_message(message):
 
 def lambda_handler(event, context):
     try:
-        
         # Extracting S3 bucket name and object key from the SQS message
         message_body = json.loads(event['Records'][0]['body'])
         inner_message_body = json.loads(message_body['Message'])
@@ -55,6 +54,15 @@ def lambda_handler(event, context):
         
         # Read JSON data from input S3 bucket
         response = s3.get_object(Bucket='raw-data-geoshield', Key=file_name)
+        tags=s3.get_object_tagging(Bucket='raw-data-geoshield', Key=file_name)
+        # Accessing the 'Category' value from the 'TagSet'
+        for tag in tags['TagSet']:
+            if tag['Key'] == 'Category':
+                category = tag['Value']
+                break
+
+        print("Category:", category) 
+        
         json_data = response['Body'].read().decode('utf-8')
         messages = json.loads(json_data)
         
@@ -65,6 +73,7 @@ def lambda_handler(event, context):
         # Filter out messages with null location
         processed_messages = [msg for msg in processed_messages if msg["location"] != "null"]
         
+
         # Invoke another Lambda function to process the results
         lambda_client = boto3.client('lambda')
         invoke_response = lambda_client.invoke(
@@ -72,7 +81,8 @@ def lambda_handler(event, context):
             InvocationType='RequestResponse',
             Payload=json.dumps({
                 "file_name": file_name,
-                "messages": processed_messages
+                "messages": processed_messages,
+                "category": category  # Pass the category tag to the next Lambda function
             })
         )
         

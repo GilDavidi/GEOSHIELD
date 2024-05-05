@@ -1,61 +1,38 @@
 {
-    "cfae4d6c-9edd-4bcb-b2da-ffaa68f88d52": {
+    "1d9e270a-8094-4d1d-9eb2-c1270b42b889": {
         "messages": [
             {
-                "id": "cfae4d6c-9edd-4bcb-b2da-ffaa68f88d52",
-                "message": "Some Ukrainian strikes have killed scores of Russian troops with a single blow.\nThe UK Defense Ministry said on April 27, 2024, that it estimated 450,000 Russian troops had been killed or wounded since the start of the conflict.\nThe attack killed more than 100 Russian soldiers in one fell swoop, according to OSINT and military analysts.\nRussians killed while training on Dzharylhach islandFootage uploaded by Ukraine of a HIMARS strike on a sandbar.\nAn unnamed Ukrainian official told the Kyiv Post that it was a \"funny situation\" because the Russian soldiers had made themselves sitting ducks.",
-                "url": "https://www.yahoo.com/news/6-russias-deadliest-moments-ukraine-115354779.html",
-                "date": "2024-05-04 10:30",
+                "id": "1d9e270a-8094-4d1d-9eb2-c1270b42b889",
+                "message": "Hezbollah launches rockets at Israel after deadly south Lebanon strikeBEIRUTA local official and state media in Lebanon said an Israeli strike on a southern village on Sunday killed several people from the same family, with Hezbollah announcing rocket fire in retaliation.\nIsrael and Lebanon's Iran-backed Hezbollah group have exchanged regular cross-border fire since Palestinian militant group Hamas's unprecedented October attack on southern Israel sparked the war in Gaza.\nFighting has intensified in recent weeks, with Israel striking deeper into Lebanese territory, while Hezbollah has stepped up its missile and drone attacks on military positions in northern Israel.\nA Lebanese security source, requesting anonymity as they were not authorised to speak to the media, confirmed the strike killed \"four civilians\".\nHezbollah in a statement said it fired \"dozens of Katyusha and Falaq rockets\" at Kiryat Shmona in northern Israel \"in response to the horrific crime that the Israeli enemy committed in Mais al-Jabal\".",
+                "url": "https://www.hurriyetdailynews.com/hezbollah-launches-rockets-at-israel-after-deadly-south-lebanon-strike-193163",
+                "date": "2024-05-05 15:30",
                 "source": "GDELT"
             },
             {
-                "id": "e3b2dbf8-98f5-40be-b6a3-d17d74e6a107",
-                "message": "Some Ukrainian strikes have killed scores of Russian troops with a single blow.\nThe UK Defense Ministry said on April 27, 2024, that it estimated 450,000 Russian troops had been killed or wounded since the start of the conflict.\nThe attack killed more than 100 Russian soldiers in one fell swoop, according to OSINT and military analysts.\nRussians killed while training on Dzharylhach islandFootage uploaded by Ukraine of a HIMARS strike on a sandbar.\nAn unnamed Ukrainian official told the Kyiv Post that it was a \"funny situation\" because the Russian soldiers had made themselves sitting ducks.",
-                "url": "https://www.yahoo.com/news/6-russias-deadliest-moments-ukraine-115354241.html",
-                "date": "2024-05-04 10:30",
+                "id": "3c4fae58-f744-4238-aa4c-5785f29519da",
+                "message": "BEIRUT (AFP): A local official and state media in Lebanon said an Israeli strike on a southern village on Sunday killed several people from the same family, with Hezbollah announcing rocket fire in retaliation.\nIsrael and Lebanon\u2019s Iran-backed Hezbollah group have exchanged regular cross-border fire since Palestinian militant group Hamas\u2019s unprecedented October attack on southern Israel sparked the war in Gaza.\nFighting has intensified in recent weeks, with Israel striking deeper into Lebanese territory, while Hezbollah has stepped up its missile and drone attacks on military positions in northern Israel.\nA Lebanese security source, requesting anonymity as they were not authorised to speak to the media, confirmed the strike killed \u201cfour civilians\u201d.\nHezbollah in a statement said it fired \u201cdozens of Katyusha and Falaq rockets\u201d at Kiryat Shmona in northern Israel \u201cin response to the horrific crime that the Israeli enemy committed in Mais al-Jabal\u201d.",
+                "url": "https://thefrontierpost.com/hezbollah-launches-rockets-at-israel-after-deadly-south-lebanon-strike/",
+                "date": "2024-05-05 16:30",
                 "source": "GDELT"
             }
         ],
-        "location": "Dzharylhach island",
-        "total_score": 1.0,
+        "location": "MAIS AL-JABAL",
+        "total_score": 0.8713759516412996,
         "count": 1,
-        "average_score": 1.0,
+        "average_score": 0.8713759516412996,
         "final_score": 1.0
     },
-    "3b9f1d19-d6a1-47a2-a16f-998ffcf373f9": {
+    "ee801263-9765-456f-823d-f85c9a638dec": {
         "messages": [
             {
-                "id": "3b9f1d19-d6a1-47a2-a16f-998ffcf373f9",
-                "message": "Local officials and media reports in the eastern Democratic Republic of Congo say at least nine people \u2013 most of them children \u2013 were killed Friday following an explosion or explosions at displaced persons camp in the eastern city of Goma.\nFrom his X social media account, DRC journalist Daniel Michombero reported an explosion at the Mugunga displaced persons camp in Goma.\nWitnesses and local officials reported seeing at least nine bodies at the scene and at least 20 wounded.\nA local hospital official told the French news agency AFP the facility had received 32 wounded and four bodies.\nIn a statement on his official X account, DRC government spokesman Patrick Muyaya blamed the Rwandan army and its \u201cterrorist auxiliaries\u201d the M23 rebels for the attack.",
-                "url": "https://www.voanews.com/a/explosion-at-drc-displaced-persons-camp-kills-at-least-9-/7596984.html",
-                "date": "2024-05-03 19:00",
-                "source": "GDELT"
-            },
-            {
-                "id": "520c2ae9-a859-47bb-aa47-db1800301a23",
-                "message": "Local officials and media reports in the eastern Democratic Republic of Congo say at least nine people \u2013 most of them children \u2013 were killed Friday following an explosion or explosions at displaced persons camp in the eastern city of Goma.\nFrom his X social media account, DRC journalist Daniel Michombero reported an explosion at the Mugunga displaced persons camp in Goma.\nWitnesses and local officials reported seeing at least nine bodies at the scene and at least 20 wounded.\nA local hospital official told the French news agency AFP the facility had received 32 wounded and four bodies.\nIn a statement on his official X account, DRC government spokesman Patrick Muyaya blamed the Rwandan army and its \u201cterrorist auxiliaries\u201d the M23 rebels for the attack.",
-                "url": "https://www.newdelhitimes.com/explosion-at-drc-displaced-persons-camp-kills-at-least-9/",
-                "date": "2024-05-04 16:30",
-                "source": "GDELT"
-            }
-        ],
-        "location": "Goma, Democratic Republic of Congo",
-        "total_score": 1.0,
-        "count": 1,
-        "average_score": 1.0,
-        "final_score": 1.0
-    },
-    "d4d98c3e-3a6c-4024-a998-08e6ce295ac0": {
-        "messages": [
-            {
-                "id": "d4d98c3e-3a6c-4024-a998-08e6ce295ac0",
+                "id": "ee801263-9765-456f-823d-f85c9a638dec",
                 "message": "Jerusalem, May 5: The Israel Defense Forces (IDF) announced on Saturday that Aiman Zaarab, a senior commander of the Islamic Jihad Rafah Brigade, was killed in an airstrike on the southernmost Gazan city of Rafah.\nZaarab directed the Islamic Jihad\u2019s elite forces during the Oct. 7 onslaught on Kibbutz Sufa and the Sufa military post bordering the Gaza Strip, said the IDF in a statement.\nZaarab had \u201ccommanded and directed\u201d several attacks, and over the past few days, he led the Islamic Jihads\u2019 preparations for a combat in the southern Gaza Strip against the Israeli military, according to the statement.\nAlong with Zaarab, two other Islamic Jihad operatives were killed during the strike, the IDF added.",
                 "url": "https://www.dailyexcelsior.com/islamic-jihad-commander-killed-in-rafah-israeli-army/",
                 "date": "2024-05-05 06:15",
                 "source": "GDELT"
             },
             {
-                "id": "9665791e-7e4a-49f5-8fc5-70f9e2455bfb",
+                "id": "bde69589-1554-4591-8c92-b2171cea0eee",
                 "message": "The Israel Defense Forces (IDF) has announced that Aiman Zaarab, a senior commander of the Islamic Jihad Rafah Brigade, was killed in an airstrike on the southernmost Gazan city of Rafah.\nZaarab directed the Islamic Jihad\u2019s elite forces during the October 7 onslaught on Kibbutz Sufa and the Sufa military post bordering the Gaza Strip, the IDF was quoted as saying on Saturday by Xinhua news agency.\nZaarab had \u201ccommanded and directed\u201d several attacks, and over the past few days, he led the Islamic Jihads\u2019 preparations for combat in the southern Gaza Strip against the Israeli military, according to the IDF statement.\nAdvertisementAlong with Zaarab, two other Islamic Jihad operatives were killed during the strike, the IDF added.",
                 "url": "https://www.thestatesman.com/world/islamic-jihad-commander-killed-in-rafah-israeli-army-1503297279.html",
                 "date": "2024-05-05 06:15",
@@ -66,6 +43,6 @@
         "total_score": 0.8411742166212535,
         "count": 1,
         "average_score": 0.8411742166212535,
-        "final_score": 0.8888219516348774
+        "final_score": 0.9767669557400827
     }
 }

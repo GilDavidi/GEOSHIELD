@@ -69,7 +69,7 @@ def lambda_handler(event, context):
         summaries_json = json.dumps(summaries)
 
         # Adjust the file name to include the category
-        file_name = f'gdelt_articles_{category}.json'
+        file_name = f'gdelt_articles_{str(uuid.uuid4())}.json'
 
         print("Uploading data to S3...")
 

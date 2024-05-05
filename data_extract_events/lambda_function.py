@@ -1,6 +1,5 @@
 import json
 import boto3
-import uuid
 import concurrent.futures
 from g4f.client import Client
 from datetime import datetime
@@ -35,33 +34,106 @@ def process_message(message):
             message["event_breakdown"] = "null"
     
     return message
+    
+def compare_first_two_words(file1, file2):
+    # Split the file names by underscore
+    words1 = file1.split('_')
+    words2 = file2.split('_')
+    
+    # Compare the first two words
+    return words1[0] == words2[0] and words1[1] == words2[1]
+    
+    
+def merge_json(json1, json2):
+    merged_data = {}
+    for item in json1:
+        message = item['message']
+        if message not in merged_data:
+            merged_data[message] = item
+    for item in json2:
+        message = item['message']
+        if message not in merged_data:
+            merged_data[message] = item
+
+    merged_list = list(merged_data.values())
+    return merged_list
 
 def lambda_handler(event, context):
     try:
         s3 = boto3.client('s3')
         bucket_name = 'classified-data-geoshield'
-        
-        # Extract file name and messages from the event payload
+        category = event['category']
         file_name = event['file_name']
         messages = event['messages']
-        
+        today = datetime.now().strftime('%Y-%m-%d')
+        file_exists_today = False
+        matching_category = None
+     
         print("Extracting data from " + file_name + " started")
-        
+            
         # Define the maximum number of workers for concurrent processing
         max_workers = 10
-        
-        # Process messages concurrently
+            
+            # Process messages concurrently
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             processed_messages = list(executor.map(process_message, messages))
+            
+            
+            
+        # List all files in the S3 bucket
+        response = s3.list_objects_v2(Bucket=bucket_name)
         
-        # Generate a UUID for the output key
-        output_uuid = str(uuid.uuid4())
+        # Check if any file matches today's date and category
+        for obj in response.get('Contents', []):
+            file_key = obj['Key']
+            last_modified = obj['LastModified'].strftime('%Y-%m-%d')
+            # Check if the file's last modified date matches today's date
+            if today == last_modified:
+                if compare_first_two_words(file_key,file_name):
+                    response_tags = s3.get_object_tagging(Bucket=bucket_name, Key=file_key)
+                    print("found file: "+ file_key)
+                    for tag in response_tags['TagSet']:
+                        print(tag)
+                        # Check if the file's category matches the event's category
+                        if tag['Key'] == 'Category':
+                            if tag['Value'] == event['category']:
+                                file_exists_today = True
+                                matching_category = tag['Value']
+                                break
+            if file_exists_today:
+                break
         
-        # Save updated messages to S3 with UUID appended to the filename
-        output_key = f"{file_name.split('.')[0]}_{output_uuid}.json"
-        s3.put_object(Bucket=bucket_name, Key=output_key, Body=json.dumps(processed_messages))
+        # If a matching file exists, append new information to it
+        if file_exists_today:
+            # Download the file from S3
+            response = s3.get_object(Bucket=bucket_name, Key=file_key)
+            file_content = response['Body'].read().decode('utf-8')
+            existing_messages = json.loads(file_content)
+            
+            # Filter out existing messages from the processed messages
+            updated_messages = merge_json(existing_messages,processed_messages)
+
+            # Upload the updated content back to S3
+            s3.put_object(Bucket=bucket_name, Key=file_key, Body=json.dumps(updated_messages))
+            print(f"Data appended to {file_key} successfully!")
+        else:
+            # Proceed with regular process of saving processed messages as a new file in S3
+            s3.put_object(Bucket=bucket_name, Key=file_name, Body=json.dumps(processed_messages))
+            # Add category tag to the file in S3
+            s3.put_object_tagging(
+                Bucket=bucket_name,
+                Key=file_name,
+                Tagging={
+                    'TagSet': [
+                        {
+                            'Key': 'Category',
+                            'Value': category
+                        }
+                    ]
+                }
+            )
+            print("Data  " + file_name + " processed and saved successfully!")
         
-        print("Data from " + file_name + " processed and saved successfully!")
         return {
             'statusCode': 200,
             'body': json.dumps('Files processed and saved successfully!')
