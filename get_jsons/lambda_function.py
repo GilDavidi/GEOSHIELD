@@ -22,18 +22,23 @@ def remove_duplicate_urls(messages):
 
 def lambda_handler(event, context):
     try:
+        # Print received event and query parameters
+        print("Received event:", json.dumps(event))
+        
         # S3 bucket names
         classified_bucket = "classified-data-geoshield"
         matching_bucket = "maching-events-geoshield"
 
         # Get the query parameters
         query_params = event.get('queryStringParameters', {})
+        print("Query Parameters:", query_params)
         category = query_params.get('category')
         start_date = query_params.get('start_date')
         end_date = query_params.get('end_date')
 
         # Check if 'category' parameter exists
         if not category:
+            # Return a 400 status code if category parameter is missing
             return {
                 'statusCode': 400,
                 'body': "Category parameter not found in query string.",
@@ -61,6 +66,8 @@ def lambda_handler(event, context):
         gdelt_articles = []
         telegram_messages = []
         for file_key in filtered_files:
+            # Print loading file from S3
+            print("Loading file from S3:", file_key)
             json_data = load_json_from_s3(classified_bucket, file_key)
             # Filter out messages occurred before start_date
             json_data_filtered = [msg for msg in json_data if msg.get('date') >= start_date]
@@ -76,12 +83,14 @@ def lambda_handler(event, context):
         # Load JSON file from matching bucket
         matching_messages = []
         matching_file_key = "matching_messages.json"
+        print("Loading file from S3:", matching_file_key)
         matching_json_data = load_json_from_s3(matching_bucket, matching_file_key)
 
+        # Prepare response body
         response_body = {
             'gdelt_articles': gdelt_articles,
             'telegram_messages': telegram_messages,
-            'matching_messages': matching_json_data
+            'matching_messages':  matching_json_data
         }
 
         return {
@@ -95,12 +104,25 @@ def lambda_handler(event, context):
         }
 
     except Exception as e:
+        # Print and return error message with 500 status code
+        error_message = f"An error occurred: {str(e)}"
+        print(error_message)
         return {
             'statusCode': 500,
-            'body': json.dumps({'error': str(e)}),
+            'body': json.dumps({'error': error_message}),
             'headers': {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
                 'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
             }
         }
+
+# Test locally
+event = {
+    "queryStringParameters": {
+        "category": "example_category",
+        "start_date": "2024-01-01",
+        "end_date": "2024-05-01"
+    }
+}
+lambda_handler(event, None)

@@ -15,6 +15,8 @@ def generate_text(message, question):
 
 def process_message(message):
     text_to_check = "\u6d41\u91cf\u5f02\u5e38" 
+    unwanted_text = "该ip请求过多已被暂时限流 过两分钟再试试吧(目前限制了每小时60次 正常人完全够用,学校网络和公司网络等同网络下共用额度,如果限制了可以尝试切换网络使用 ),本网站正版地址是 https://chat18.aichatos.xyz 如果你在其他网站遇到此报错，请访问https://chat18.aichatos8.xyz ，如果你已经在本网站，请关闭代理，不要使用公共网络访问,如需购买独立次数请访问 https://binjie09.shop"
+    
     event_breakdown_question="What are the events in the text? Write it only in English, in the form of a list of reports (without conclusions and without some summary sentence after the events or title) (For me, an event is an event that can be placed on a map - that is, with a location). If several events are related to each other, list them as a single event in brief"
     # Define maximum number of attempts to find a valid location
     max_attempts = 3
@@ -22,7 +24,7 @@ def process_message(message):
     event_breakdown = None
     while attempt_count < max_attempts:
         event_breakdown = generate_text(message["message"], event_breakdown_question)
-        if event_breakdown is not None and "January 2022" not in event_breakdown and text_to_check not in event_breakdown:
+        if event_breakdown is not None and "January 2022" not in event_breakdown and text_to_check not in event_breakdown and unwanted_text not in event_breakdown:
             message["event_breakdown"] = str(event_breakdown)
             break  # Exit loop if a valid location is found
         else:
@@ -34,8 +36,6 @@ def process_message(message):
     
     return message
 
-import uuid
-
 def lambda_handler(event, context):
     try:
         s3 = boto3.client('s3')
@@ -45,7 +45,7 @@ def lambda_handler(event, context):
         file_name = event['file_name']
         messages = event['messages']
         
-        print("extract " + file_name + " start")
+        print("Extracting data from " + file_name + " started")
         
         # Define the maximum number of workers for concurrent processing
         max_workers = 10
@@ -61,13 +61,13 @@ def lambda_handler(event, context):
         output_key = f"{file_name.split('.')[0]}_{output_uuid}.json"
         s3.put_object(Bucket=bucket_name, Key=output_key, Body=json.dumps(processed_messages))
         
-        print("classified " + file_name + " processed and saved successfully!")
+        print("Data from " + file_name + " processed and saved successfully!")
         return {
             'statusCode': 200,
             'body': json.dumps('Files processed and saved successfully!')
         }
     except Exception as e:
-        print("error "+ str(e))
+        print("Error: " + str(e))
         return {
             'statusCode': 500,
             'body': json.dumps({"error": str(e)})
