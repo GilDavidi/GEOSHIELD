@@ -51,10 +51,10 @@ def lambda_handler(event, context):
 
         # Get the list of objects in the S3 buckets including their tags
         s3 = boto3.client('s3')
-        response_classified = s3.list_objects_v2(Bucket=classified_bucket, FetchOwner=True)
-
+        
         # Filter files by last modified date and category for classified bucket
-        filtered_files = []
+        response_classified = s3.list_objects_v2(Bucket=classified_bucket, FetchOwner=True)
+        classified_files = []
         if 'Contents' in response_classified:
             for file in response_classified['Contents']:
                 last_modified = file['LastModified']
@@ -65,37 +65,56 @@ def lambda_handler(event, context):
                     object_tags = tags_response.get('TagSet', [])
                     # Check if the object has a 'category' tag and it matches the specified category
                     if any(tag['Key'] == 'Category' and tag['Value'] == category for tag in object_tags):
-                        filtered_files.append(file['Key'])
+                        classified_files.append(file['Key'])
+
+        # Filter files by last modified date and category for matching bucket
+        response_matching = s3.list_objects_v2(Bucket=matching_bucket, FetchOwner=True)
+        matching_files = []
+        if 'Contents' in response_matching:
+            for file in response_matching['Contents']:
+                last_modified = file['LastModified']
+                last_modified_date = last_modified.strftime('%Y-%m-%d')
+                if start_date <= last_modified_date <= end_date:
+                    # Get tags for the object
+                    tags_response = s3.get_object_tagging(Bucket=matching_bucket, Key=file['Key'])
+                    object_tags = tags_response.get('TagSet', [])
+                    # Check if the object has a 'category' tag and it matches the specified category
+                    if any(tag['Key'] == 'Category' and tag['Value'] == category for tag in object_tags):
+                        matching_files.append(file['Key'])
 
         # Load JSON files from classified bucket
         gdelt_articles = []
         telegram_messages = []
-        for file_key in filtered_files:
+        for file_key in classified_files:
             # Print loading file from S3
             print("Loading file from S3:", file_key)
             json_data = load_json_from_s3(classified_bucket, file_key)
-            # Filter out messages occurred before start_date
-            json_data_filtered = [msg for msg in json_data if msg.get('date') >= start_date]
+            # Filter out messages occurred before start_date and after end_date
+            # Filter out messages occurred before start_date and after end_date
+            json_data_filtered = [msg for msg in json_data if start_date <= msg.get('date') <= end_date + 'T23:59:59']
+
             if 'gdelt' in file_key:
                 gdelt_articles.extend(json_data_filtered)
             elif 'telegram' in file_key:
                 telegram_messages.extend(json_data_filtered)
 
+        # Load JSON files from matching bucket
+        matching_messages = []
+        for file_key in matching_files:
+            # Print loading file from S3
+            print("Loading file from S3:", file_key)
+            matching_json_data = load_json_from_s3(matching_bucket, file_key)
+            matching_messages.append(matching_json_data)
+
         # Remove duplicate messages based on URL
         gdelt_articles = remove_duplicate_urls(gdelt_articles)
         telegram_messages = remove_duplicate_urls(telegram_messages)
-
-        # Load JSON file from matching bucket
-        matching_messages = []
-        matching_file_key = "matching_messages.json"
-        print("Loading file from S3:", matching_file_key)
-        matching_json_data = load_json_from_s3(matching_bucket, matching_file_key)
 
         # Prepare response body
         response_body = {
             'gdelt_articles': gdelt_articles,
             'telegram_messages': telegram_messages,
-            'matching_messages':  matching_json_data
+            'matching_messages': matching_messages
         }
 
         return {
