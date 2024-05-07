@@ -89,14 +89,10 @@ def lambda_handler(event, context):
             # Print loading file from S3
             print("Loading file from S3:", file_key)
             json_data = load_json_from_s3(classified_bucket, file_key)
-            # Filter out messages occurred before start_date and after end_date
-            # Filter out messages occurred before start_date and after end_date
-            json_data_filtered = [msg for msg in json_data if start_date <= msg.get('date') <= end_date + 'T23:59:59']
-
             if 'gdelt' in file_key:
-                gdelt_articles.extend(json_data_filtered)
+                gdelt_articles.extend(json_data)
             elif 'telegram' in file_key:
-                telegram_messages.extend(json_data_filtered)
+                telegram_messages.extend(json_data)
 
         # Load JSON files from matching bucket
         matching_messages = []
