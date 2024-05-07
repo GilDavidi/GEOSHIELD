@@ -48,7 +48,9 @@ def lambda_handler(event, context):
 
         # Create a list to hold selected messages
         selected_messages = []
-
+        
+        today_date = datetime.now().strftime('%Y-%m-%d')
+        
         # Iterate through all messages and extract required fields
         for message in all_messages:
             # Exclude empty messages
@@ -56,16 +58,19 @@ def lambda_handler(event, context):
                 # Generate a unique ID for each message
                 unique_id = str(uuid.uuid4())  
                 # Extracting and formatting the date to include only date and hour
+                
                 date_str = message['date'].strftime("%Y-%m-%d %H:%M")
-                url = extract_url(message.get('entities', []))
-                selected_message = {
-                    "id": unique_id,  # Replace the original ID with the unique ID
-                    "channel_id": message['peer_id']['channel_id'] if 'peer_id' in message and 'channel_id' in message['peer_id'] else None,
-                    "url": url,
-                    "date": date_str,
-                    "message": message['message']
-                }
-                selected_messages.append(selected_message)
+                date_str_format= message['date'].strftime('%Y-%m-%d')
+                if date_str_format == today_date:
+                    url = extract_url(message.get('entities', []))
+                    selected_message = {
+                        "id": unique_id,  # Replace the original ID with the unique ID
+                        "channel_id": message['peer_id']['channel_id'] if 'peer_id' in message and 'channel_id' in message['peer_id'] else None,
+                        "url": url,
+                        "date": date_str,
+                        "message": message['message']
+                    }
+                    selected_messages.append(selected_message)
 
         # Convert the list of selected messages to JSON
         json_data = json.dumps(selected_messages)
@@ -130,7 +135,7 @@ async def fetch_telegram_messages(client):
     all_messages = []
 
     # Calculate the timestamp for 2 days ago
-    two_days_ago = datetime.now() - timedelta(days=2)
+    two_days_ago = datetime.now() - timedelta(days=1)
     two_days_ago_timestamp = int(two_days_ago.timestamp())
 
     offset_id = 0

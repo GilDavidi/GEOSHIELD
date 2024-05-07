@@ -2,6 +2,7 @@ import json
 import boto3
 from datetime import datetime
 import requests
+from datetime import datetime, timedelta
 import configparser
 
 # AWS S3 client
@@ -65,7 +66,7 @@ def make_gdelt_request(config, category):
 
         params = {
             'format': 'JSON',
-            'timespan': '48H',
+            'timespan': '24H',
             'query': f'{keyword_query} sourcelang:eng',
             'mode': 'artlist',
             'maxrecords': 80,
@@ -87,17 +88,19 @@ def make_gdelt_request(config, category):
 def extract_articles(articles):
     try:
         extracted_articles = []
-
+        today_date = datetime.now().strftime('%Y-%m-%d')
         for article in articles:
             article_title = article['title']
             article_url = article['url']
             article_date = datetime.strptime(article['seendate'], "%Y%m%dT%H%M%SZ").strftime("%Y-%m-%d %H:%M")
-            extracted_article = {
-                    "title": article_title,
-                    "date": article_date,
-                    "url": article_url,
-            }
-            extracted_articles.append(extracted_article)
+            article_date_format=datetime.strptime(article['seendate'], "%Y%m%dT%H%M%SZ").strftime('%Y-%m-%d')
+            if article_date_format == today_date:
+                extracted_article = {
+                        "title": article_title,
+                        "date": article_date,
+                        "url": article_url,
+                }
+                extracted_articles.append(extracted_article)
 
         print("Articles extracted.")
         return extracted_articles
