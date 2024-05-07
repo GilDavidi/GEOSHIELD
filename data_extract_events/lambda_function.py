@@ -66,6 +66,8 @@ def lambda_handler(event, context):
         file_name = event['file_name']
         messages = event['messages']
         today = datetime.now().strftime('%Y-%m-%d')
+        today_with_time = datetime.now().strftime('%Y-%m-%d %H:%M')  # Printing today's date with current hour and minute
+        print("Today's date with time:", today_with_time)
         file_exists_today = False
         matching_category = None
      
@@ -87,6 +89,8 @@ def lambda_handler(event, context):
         for obj in response.get('Contents', []):
             file_key = obj['Key']
             last_modified = obj['LastModified'].strftime('%Y-%m-%d')
+            last_modified_with_time = obj['LastModified'].strftime('%Y-%m-%d %H:%M')  # Printing last modified date with current hour and minute
+            print("Last modified date with time for file", file_key + ":", last_modified_with_time)
             # Check if the file's last modified date matches today's date
             if today == last_modified:
                 if compare_first_two_words(file_key,file_name):
@@ -115,7 +119,23 @@ def lambda_handler(event, context):
 
             # Upload the updated content back to S3
             s3.put_object(Bucket=bucket_name, Key=file_key, Body=json.dumps(updated_messages))
+            
+            # Add category tag to the file in S3
+            s3.put_object_tagging(
+                Bucket=bucket_name,
+                Key=file_key,
+                Tagging={
+                    'TagSet': [
+                        {
+                            'Key': 'Category',
+                            'Value': category
+                        }
+                    ]
+                }
+            )
             print(f"Data appended to {file_key} successfully!")
+            
+            
         else:
             # Proceed with regular process of saving processed messages as a new file in S3
             s3.put_object(Bucket=bucket_name, Key=file_name, Body=json.dumps(processed_messages))
@@ -132,7 +152,7 @@ def lambda_handler(event, context):
                     ]
                 }
             )
-            print("Data  " + file_name + " processed and saved successfully!")
+            print("New file data  " + file_name + " processed and saved successfully!")
         
         return {
             'statusCode': 200,
