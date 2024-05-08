@@ -35,15 +35,15 @@ def classify_and_invoke(messages, file_name, category):
                     predicted_category = model_output.get("Predicted", None)
                     score = model_output.get("Score", None)
 
-                    # Check if predicted category matches the file category
-                    if predicted_category == category:
-                        # Add classification and score to the original message
-                        message['classification'] = predicted_category
-                        message['score'] = score
-                    else:
-                        # If predicted category does not match, skip inserting it to the message
-                        message['classification'] = None
-                        message['score'] = None
+                # Check if predicted category matches the file category and score is above 0.4
+                if predicted_category == category and score is not None and score >= 0.4:
+                    # Add classification and score to the original message
+                    message['classification'] = predicted_category
+                    message['score'] = score
+                else:
+                    # If predicted category does not match or score is under 0.6, skip inserting it to the message
+                    message['classification'] = None
+                    message['score'] = None
 
         # Prepare payload for the next Lambda function
         payload = {

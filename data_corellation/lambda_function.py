@@ -28,12 +28,12 @@ def generate_message_buckets(messages, similarity_threshold=0.6):
                     "id": message1["id"],
                     "message": message1["message"],
                     "url": message1["url"],
-                    "date":message1["date"],
+                    "date": message1["date"],
                     "source": source
                 }],
-                "location":message1["location"],
+                "location": message1["location"],
                 "total_score": 0,
-                "count": 0
+                "count": 1
             }
             assigned_ids.add(message1["id"])  # Add the current message ID to assigned IDs
 
@@ -58,7 +58,7 @@ def generate_message_buckets(messages, similarity_threshold=0.6):
                                 "id": message2["id"],
                                 "message": message2["message"],
                                 "url": message2["url"],
-                                "date":message2["date"],
+                                "date": message2["date"],
                                 "source": source
                             })
                             message_buckets[message1["id"]]["total_score"] += (jaccard_sim + levenshtein_sim) / 2
@@ -165,27 +165,37 @@ def lambda_handler(event, context):
         
         # Generate message buckets
         message_buckets = generate_message_buckets(all_messages)
+        
+        # Check if message_buckets is empty
+        if not message_buckets:
+            print("No similar messages found to be corellated")
+            return {
+                'statusCode': 200,
+                'body': json.dumps('No similar messages found to be corellated')
+            }
+            
+        # Filter out buckets with count == 0
+        filtered_buckets = {k: v for k, v in message_buckets.items() if v["count"] > 0}    
 
-        # Calculate final_score for each bucket
+        print("message buckets:" + str(message_buckets))
+        # Calculate final_score for buckets with count > 0
         final_scores = []
-        for bucket in message_buckets.values():
+        for bucket in filtered_buckets.values():  # Use filtered_buckets instead of message_buckets
             avg_score = bucket["average_score"]
             count = bucket["count"]
             final_score = (avg_score * 0.7) + (count * 0.3)
             final_scores.append(final_score)
 
-        # Calculate min and max final scores
-        min_score = min(final_scores)
-        max_score = max(final_scores)
+        # Calculate min and max final scores only if there are buckets with count > 0
+        if final_scores:
+            min_score = min(final_scores)
+            max_score = max(final_scores)
 
-        # Normalize final scores between 0 and 1
-        for bucket in message_buckets.values():
-            final_score = (bucket["average_score"] * 0.7) + (bucket["count"] * 0.3)
-            normalized_score = (final_score - min_score) / (max_score - min_score)
-            bucket["final_score"] = normalized_score
-
-        # Filter out buckets with count == 0
-        filtered_buckets = {k: v for k, v in message_buckets.items() if v["count"] > 0}
+            # Normalize final scores between 0 and 1
+            for bucket in filtered_buckets.values():  # Use filtered_buckets instead of message_buckets
+                final_score = (bucket["average_score"] * 0.7) + (bucket["count"] * 0.3)
+                normalized_score = (final_score - min_score) / (max_score - min_score)
+                bucket["final_score"] = normalized_score
         
         today = datetime.now().strftime('%Y-%m-%d')
 

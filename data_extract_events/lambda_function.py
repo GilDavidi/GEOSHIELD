@@ -16,7 +16,8 @@ def process_message(message):
     text_to_check = "\u6d41\u91cf\u5f02\u5e38" 
     unwanted_text = "该ip请求过多已被暂时限流 过两分钟再试试吧(目前限制了每小时60次 正常人完全够用,学校网络和公司网络等同网络下共用额度,如果限制了可以尝试切换网络使用 ),本网站正版地址是 https://chat18.aichatos.xyz 如果你在其他网站遇到此报错，请访问https://chat18.aichatos8.xyz ，如果你已经在本网站，请关闭代理，不要使用公共网络访问,如需购买独立次数请访问 https://binjie09.shop"
     
-    event_breakdown_question="What are the events in the text? Write it only in English, in the form of a list of reports (without conclusions and without some summary sentence after the events or title) (For me, an event is an event that can be placed on a map - that is, with a location). If several events are related to each other, list them as a single event in brief"
+    event_breakdown_question = "What are the events in the text? Write it only in English, in the form of a list of reports (without conclusions and without some summary sentence after the events or title) (For me, an event is an event that can be placed on a map - that is, with a location). If several events are related to each other, list them as a single event in brief"
+    
     # Define maximum number of attempts to find a valid location
     max_attempts = 3
     attempt_count = 0
@@ -25,13 +26,15 @@ def process_message(message):
         event_breakdown = generate_text(message["message"], event_breakdown_question)
         if event_breakdown is not None and "January 2022" not in event_breakdown and text_to_check not in event_breakdown and unwanted_text not in event_breakdown:
             message["event_breakdown"] = str(event_breakdown)
+            print("Event breakdown found:", event_breakdown)
             break  # Exit loop if a valid location is found
         else:
             attempt_count += 1  # Increment attempt count
             
-        # If no valid location is found after maximum attempts, default to 'null'
-        if attempt_count == max_attempts:
-            message["event_breakdown"] = "null"
+    # If no valid location is found after maximum attempts, default to 'null'
+    if attempt_count == max_attempts:
+        message["event_breakdown"] = "null"
+        print("No valid event breakdown found for the message. Message dropped.")
     
     return message
     
@@ -42,21 +45,18 @@ def compare_first_two_words(file1, file2):
     
     # Compare the first two words
     return words1[0] == words2[0] and words1[1] == words2[1]
-    
-    
-def merge_json(json1, json2):
-    merged_data = {}
-    for item in json1:
-        message = item['message']
-        if message not in merged_data:
-            merged_data[message] = item
-    for item in json2:
-        message = item['message']
-        if message not in merged_data:
-            merged_data[message] = item
 
-    merged_list = list(merged_data.values())
-    return merged_list
+
+def remove_duplicate_urls(messages):
+    unique_urls = set()
+    unique_messages = []
+    for message in messages:
+        url = message.get('url')
+        if url not in unique_urls:
+            unique_urls.add(url)
+            unique_messages.append(message)
+    return unique_messages
+    
 
 def lambda_handler(event, context):
     try:
@@ -115,7 +115,8 @@ def lambda_handler(event, context):
             existing_messages = json.loads(file_content)
             
             # Filter out existing messages from the processed messages
-            updated_messages = merge_json(existing_messages,processed_messages)
+            all_message = existing_messages+processed_messages
+            updated_messages = remove_duplicate_urls(all_message)
 
             # Upload the updated content back to S3
             s3.put_object(Bucket=bucket_name, Key=file_key, Body=json.dumps(updated_messages))
