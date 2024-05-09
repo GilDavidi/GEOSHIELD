@@ -24,7 +24,7 @@ def process_message(message):
     event_breakdown = None
     while attempt_count < max_attempts:
         event_breakdown = generate_text(message["message"], event_breakdown_question)
-        if event_breakdown is not None and "January 2022" not in event_breakdown and text_to_check not in event_breakdown and unwanted_text not in event_breakdown:
+        if event_breakdown is not None and "January 2022" not in event_breakdown and text_to_check not in event_breakdown and unwanted_text not in event_breakdown and event_breakdown != "":
             message["event_breakdown"] = str(event_breakdown)
             print("Event breakdown found:", event_breakdown)
             break  # Exit loop if a valid location is found

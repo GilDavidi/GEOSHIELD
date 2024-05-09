@@ -33,7 +33,7 @@ def generate_message_buckets(messages, similarity_threshold=0.6):
                 }],
                 "location": message1["location"],
                 "total_score": 0,
-                "count": 1
+                "count": 0
             }
             assigned_ids.add(message1["id"])  # Add the current message ID to assigned IDs
 

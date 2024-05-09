@@ -69,7 +69,7 @@ def make_gdelt_request(config, category):
             'timespan': '24H',
             'query': f'{keyword_query} sourcelang:eng',
             'mode': 'artlist',
-            'maxrecords': 80,
+            'maxrecords': 250,
             'sort': 'hybridrel'
         }
 

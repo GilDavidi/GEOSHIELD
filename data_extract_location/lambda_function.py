@@ -29,7 +29,7 @@ def process_message(message):
             location = generate_text(message["message"], location_question)
             
             # Check if the location is meaningful, not empty, and does not contain specific words
-            if location is not None and "January 2022" not in location and text_to_check not in location and unwanted_text not in location and 'null' not in location:
+            if location is not None and "January 2022" not in location and text_to_check not in location and unwanted_text not in location and 'null' not in location and location != "":
                 message["location"] = str(location)
                 print("Location found:", location)
                 break  # Exit loop if a valid location is found
