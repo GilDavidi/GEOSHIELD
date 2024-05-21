@@ -1,20 +1,58 @@
+import requests
 import json
 import concurrent.futures
 import boto3
-from g4f.client import Client
+import traceback
+
+# Define the correct endpoint for AI21 Studio's API
+endpoint = "https://api.ai21.com/studio/v1/j2-ultra/complete"
+
+# API key
+api_key = "Gpe5nl7oFtCAMHGNtg5nzZsc3l6Jfj0w"
 
 def generate_text(message, question):
-    client = Client()
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": question + message}]
-    )
-    return response.choices[0].message.content
+    prompt = message + question
+    # Request headers
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    # Request payload
+    request_body = {
+        "prompt": prompt,
+        "maxTokens": 16,  # Specify the maximum number of tokens in the generated completion
+    }
+    
+    # Send the request to the AI21 API
+    response = requests.post(endpoint, data=json.dumps(request_body), headers=headers)
+    
+    # Parse the response JSON
+    response_json = response.json()
+    
+    # Initialize generated_text
+    generated_text = ""
+    
+    # Check if 'completions' key exists in the response
+    if 'completions' in response_json:
+        # Extract the generated text from the response
+        generated_text = response_json['completions'][0]['data']['text']
+        
+        # Clean up the response text
+        generated_text = generated_text.strip()
+
+    # Check if the response contains 'Location:null'
+    if 'Location:null' in generated_text:
+        location = 'null'
+    else:
+        # Extract location after 'Location:'
+        location = generated_text.split('Location:')[-1].strip() if generated_text else 'null'
+
+    # Print the cleaned location
+    print(f"Location: {location}")
+
+    return location
 
 def process_message(message):
-    text_to_check = "\u6d41\u91cf\u5f02\u5e38" 
-    unwanted_text = "该ip请求过多已被暂时限流 过两分钟再试试吧(目前限制了每小时60次 正常人完全够用,学校网络和公司网络等同网络下共用额度,如果限制了可以尝试切换网络使用 ),本网站正版地址是 https://chat18.aichatos.xyz 如果你在其他网站遇到此报错，请访问https://chat18.aichatos8.xyz ，如果你已经在本网站，请关闭代理，不要使用公共网络访问,如需购买独立次数请访问 https://binjie09.shop"
-    
     if message["message"]:
         print("Processing message:", message["message"])
         
@@ -29,7 +67,7 @@ def process_message(message):
             location = generate_text(message["message"], location_question)
             
             # Check if the location is meaningful, not empty, and does not contain specific words
-            if location is not None and "January 2022" not in location and text_to_check not in location and unwanted_text not in location and 'null' not in location and location != "":
+            if location and 'null' not in location and location != "":
                 message["location"] = str(location)
                 print("Location found:", location)
                 break  # Exit loop if a valid location is found
@@ -58,7 +96,8 @@ def lambda_handler(event, context):
         
         # Read JSON data from input S3 bucket
         response = s3.get_object(Bucket='raw-data-geoshield', Key=file_name)
-        tags=s3.get_object_tagging(Bucket='raw-data-geoshield', Key=file_name)
+        tags = s3.get_object_tagging(Bucket='raw-data-geoshield', Key=file_name)
+        
         # Accessing the 'Category' value from the 'TagSet'
         for tag in tags['TagSet']:
             if tag['Key'] == 'Category':
@@ -77,9 +116,9 @@ def lambda_handler(event, context):
         # Filter out messages with null location
         processed_messages = [msg for msg in processed_messages if msg["location"] != "null"]
         
-
         # Invoke another Lambda function to process the results
         lambda_client = boto3.client('lambda')
+        print("output messages: " + str(processed_messages))
         invoke_response = lambda_client.invoke(
             FunctionName='data_classification',
             InvocationType='RequestResponse',
@@ -99,6 +138,7 @@ def lambda_handler(event, context):
 
     except Exception as e:
         print("Error: " + str(e))
+        traceback.print_exc()  
         return {
             "statusCode": 500,
             "body": json.dumps({"error": str(e)})

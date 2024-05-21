@@ -179,23 +179,10 @@ def lambda_handler(event, context):
 
         print("message buckets:" + str(message_buckets))
         # Calculate final_score for buckets with count > 0
-        final_scores = []
         for bucket in filtered_buckets.values():  # Use filtered_buckets instead of message_buckets
             avg_score = bucket["average_score"]
-            count = bucket["count"]
-            final_score = (avg_score * 0.7) + (count * 0.3)
-            final_scores.append(final_score)
-
-        # Calculate min and max final scores only if there are buckets with count > 0
-        if final_scores:
-            min_score = min(final_scores)
-            max_score = max(final_scores)
-
-            # Normalize final scores between 0 and 1
-            for bucket in filtered_buckets.values():  # Use filtered_buckets instead of message_buckets
-                final_score = (bucket["average_score"] * 0.7) + (bucket["count"] * 0.3)
-                normalized_score = (final_score - min_score) / (max_score - min_score)
-                bucket["final_score"] = normalized_score
+            count = bucket["count"] / 10
+            bucket["final_score"] = (avg_score * 0.7) + (count * 0.3)
         
         today = datetime.now().strftime('%Y-%m-%d')
 
