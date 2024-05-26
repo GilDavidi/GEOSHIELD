@@ -8,8 +8,18 @@ import traceback
 # Define the correct endpoint for AI21 Studio's API
 endpoint = "https://api.ai21.com/studio/v1/j2-ultra/complete"
 
-# API key
-api_key = "Gpe5nl7oFtCAMHGNtg5nzZsc3l6Jfj0w"
+# AWS Secrets Manager client
+secrets_client = boto3.client('secretsmanager')
+
+secret_name = "ai_api_secrets"
+region_name = "eu-west-1"
+
+get_secret_value_response = secrets_client.get_secret_value(
+    SecretId=secret_name
+)
+secret = json.loads(get_secret_value_response['SecretString'])
+api_key = secret['api_key']
+
 
 def generate_text(message, question):
     prompt =  message + question
@@ -97,7 +107,10 @@ def remove_duplicate_urls(messages):
 def lambda_handler(event, context):
     try:
         s3 = boto3.client('s3')
-        bucket_name = 'classified-data-geoshield'
+        if event['bucket_name'] == 'raw-data-geoshield':
+            bucket_name = 'classified-data-geoshield'
+        else:
+            bucket_name = 'custom-classified-data-geoshield'
         category = event['category']
         file_name = event['file_name']
         messages = event['messages']
@@ -115,67 +128,83 @@ def lambda_handler(event, context):
             # Process messages concurrently
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             processed_messages = list(executor.map(process_message, messages, [category] * len(messages)))
-
-            
-            
-            
-        # List all files in the S3 bucket
-        response = s3.list_objects_v2(Bucket=bucket_name)
         
-        # Check if any file matches today's date and category
-        for obj in response.get('Contents', []):
-            file_key = obj['Key']
-            last_modified = obj['LastModified'].strftime('%Y-%m-%d')
-            last_modified_with_time = obj['LastModified'].strftime('%Y-%m-%d %H:%M')  # Printing last modified date with current hour and minute
-            print("Last modified date with time for file", file_key + ":", last_modified_with_time)
-            # Check if the file's last modified date matches today's date
-            if today == last_modified:
-                if compare_first_two_words(file_key,file_name):
-                    response_tags = s3.get_object_tagging(Bucket=bucket_name, Key=file_key)
-                    print("found file: "+ file_key)
-                    for tag in response_tags['TagSet']:
-                        print(tag)
-                        # Check if the file's category matches the event's category
-                        if tag['Key'] == 'Category':
-                            if tag['Value'] == event['category']:
-                                file_exists_today = True
-                                matching_category = tag['Value']
-                                break
+        if bucket_name == 'classified-data-geoshield':
+            # List all files in the S3 bucket
+            response = s3.list_objects_v2(Bucket=bucket_name)
+            
+            # Check if any file matches today's date and category
+            for obj in response.get('Contents', []):
+                file_key = obj['Key']
+                last_modified = obj['LastModified'].strftime('%Y-%m-%d')
+                last_modified_with_time = obj['LastModified'].strftime('%Y-%m-%d %H:%M')  # Printing last modified date with current hour and minute
+                print("Last modified date with time for file", file_key + ":", last_modified_with_time)
+                # Check if the file's last modified date matches today's date
+                if today == last_modified:
+                    if compare_first_two_words(file_key,file_name):
+                        response_tags = s3.get_object_tagging(Bucket=bucket_name, Key=file_key)
+                        print("found file: "+ file_key)
+                        for tag in response_tags['TagSet']:
+                            print(tag)
+                            # Check if the file's category matches the event's category
+                            if tag['Key'] == 'Category':
+                                if tag['Value'] == event['category']:
+                                    file_exists_today = True
+                                    matching_category = tag['Value']
+                                    break
+                if file_exists_today:
+                    break
+            
+            # If a matching file exists, append new information to it
             if file_exists_today:
-                break
+                # Download the file from S3
+                response = s3.get_object(Bucket=bucket_name, Key=file_key)
+                file_content = response['Body'].read().decode('utf-8')
+                existing_messages = json.loads(file_content)
+                
+                # Filter out existing messages from the processed messages
+                all_message = existing_messages+processed_messages
+                updated_messages = remove_duplicate_urls(all_message)
+    
+                # Upload the updated content back to S3
+                s3.put_object(Bucket=bucket_name, Key=file_key, Body=json.dumps(updated_messages))
+                
+                # Add category tag to the file in S3
+                s3.put_object_tagging(
+                    Bucket=bucket_name,
+                    Key=file_key,
+                    Tagging={
+                        'TagSet': [
+                            {
+                                'Key': 'Category',
+                                'Value': category
+                            }
+                        ]
+                    }
+                )
+                print(f"Data appended to {file_key} successfully!")
+                
+                
+            else:
+                # Proceed with regular process of saving processed messages as a new file in S3
+                s3.put_object(Bucket=bucket_name, Key=file_name, Body=json.dumps(processed_messages))
+                # Add category tag to the file in S3
+                s3.put_object_tagging(
+                    Bucket=bucket_name,
+                    Key=file_name,
+                    Tagging={
+                        'TagSet': [
+                            {
+                                'Key': 'Category',
+                                'Value': category
+                            }
+                        ]
+                    }
+                )
+                print("New file data  " + file_name + " processed and saved successfully!")
         
-        # If a matching file exists, append new information to it
-        if file_exists_today:
-            # Download the file from S3
-            response = s3.get_object(Bucket=bucket_name, Key=file_key)
-            file_content = response['Body'].read().decode('utf-8')
-            existing_messages = json.loads(file_content)
-            
-            # Filter out existing messages from the processed messages
-            all_message = existing_messages+processed_messages
-            updated_messages = remove_duplicate_urls(all_message)
-
-            # Upload the updated content back to S3
-            s3.put_object(Bucket=bucket_name, Key=file_key, Body=json.dumps(updated_messages))
-            
-            # Add category tag to the file in S3
-            s3.put_object_tagging(
-                Bucket=bucket_name,
-                Key=file_key,
-                Tagging={
-                    'TagSet': [
-                        {
-                            'Key': 'Category',
-                            'Value': category
-                        }
-                    ]
-                }
-            )
-            print(f"Data appended to {file_key} successfully!")
-            
-            
         else:
-            # Proceed with regular process of saving processed messages as a new file in S3
+          # Proceed with regular process of saving processed messages as a new file in S3
             s3.put_object(Bucket=bucket_name, Key=file_name, Body=json.dumps(processed_messages))
             # Add category tag to the file in S3
             s3.put_object_tagging(

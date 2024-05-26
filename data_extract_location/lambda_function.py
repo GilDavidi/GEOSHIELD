@@ -3,12 +3,22 @@ import json
 import concurrent.futures
 import boto3
 import traceback
+from botocore.exceptions import ClientError
 
 # Define the correct endpoint for AI21 Studio's API
 endpoint = "https://api.ai21.com/studio/v1/j2-ultra/complete"
 
-# API key
-api_key = "Gpe5nl7oFtCAMHGNtg5nzZsc3l6Jfj0w"
+# AWS Secrets Manager client
+secrets_client = boto3.client('secretsmanager')
+
+secret_name = "ai_api_secrets"
+region_name = "eu-west-1"
+
+get_secret_value_response = secrets_client.get_secret_value(
+    SecretId=secret_name
+)
+secret = json.loads(get_secret_value_response['SecretString'])
+api_key = secret['api_key']
 
 def generate_text(message, question):
     prompt = message + question
@@ -34,12 +44,15 @@ def generate_text(message, question):
     
     # Check if 'completions' key exists in the response
     if 'completions' in response_json:
+        
+        print("response_json: ", response_json)
         # Extract the generated text from the response
         generated_text = response_json['completions'][0]['data']['text']
         
         # Clean up the response text
         generated_text = generated_text.strip()
-
+    
+    print("generated_text: ", generated_text)
     # Check if the response contains 'Location:null'
     if 'Location:null' in generated_text:
         location = 'null'
@@ -53,6 +66,8 @@ def generate_text(message, question):
     return location
 
 def process_message(message):
+    
+    
     if message["message"]:
         print("Processing message:", message["message"])
         
@@ -84,9 +99,12 @@ def process_message(message):
 
 def lambda_handler(event, context):
     try:
+
         # Extracting S3 bucket name and object key from the SQS message
         message_body = json.loads(event['Records'][0]['body'])
         inner_message_body = json.loads(message_body['Message'])
+        bucket_name = inner_message_body['Records'][0]['s3']['bucket']['name']
+        print("bucket - " + bucket_name)
         file_name = inner_message_body['Records'][0]['s3']['object']['key']
         
         print("Extracting location for " + file_name + " started")
@@ -95,8 +113,12 @@ def lambda_handler(event, context):
         s3 = boto3.client('s3')
         
         # Read JSON data from input S3 bucket
-        response = s3.get_object(Bucket='raw-data-geoshield', Key=file_name)
-        tags = s3.get_object_tagging(Bucket='raw-data-geoshield', Key=file_name)
+        if bucket_name == 'raw-data-geoshield':
+            response = s3.get_object(Bucket='raw-data-geoshield', Key=file_name)
+            tags = s3.get_object_tagging(Bucket='raw-data-geoshield', Key=file_name)
+        else:
+            response = s3.get_object(Bucket='custom-raw-data-geoshield', Key=file_name)
+            tags = s3.get_object_tagging(Bucket='custom-raw-data-geoshield', Key=file_name)            
         
         # Accessing the 'Category' value from the 'TagSet'
         for tag in tags['TagSet']:
@@ -125,7 +147,8 @@ def lambda_handler(event, context):
             Payload=json.dumps({
                 "file_name": file_name,
                 "messages": processed_messages,
-                "category": category  # Pass the category tag to the next Lambda function
+                "category": category,  # Pass the category tag to the next Lambda function
+                "bucket_name": bucket_name
             })
         )
         

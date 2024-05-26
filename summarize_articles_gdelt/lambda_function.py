@@ -33,6 +33,7 @@ def lambda_handler(event, context):
         # Extract the category and JSON data from the event
         category = event['category']
         json_data = json.loads(event['json_data'])
+        custom_uuid = event.get('custom_uuid')  # Check if custom_uuid exists
 
         print("Processing articles for category:", category)
 
@@ -50,7 +51,7 @@ def lambda_handler(event, context):
             # Get the summary of the article
             summary = get_article_text(url)
             
-            unique_id = str(uuid.uuid4())  
+            unique_id = str(uuid.uuid4()) if custom_uuid else ''  # Generate unique_id if custom_uuid is not null
 
             # If summary extraction was successful, add article info to summaries list
             if summary:
@@ -68,13 +69,15 @@ def lambda_handler(event, context):
         # Convert the list of article summaries to JSON format
         summaries_json = json.dumps(summaries)
 
-        # Adjust the file name to include the category
-        file_name = f'gdelt_articles_{str(uuid.uuid4())}.json'
+        # Adjust the file name to include the category and custom_uuid if exists
+        file_name = f'gdelt_articles_{str(uuid.uuid4())}' if not custom_uuid else f'gdelt_articles_{custom_uuid}'
 
         print("Uploading data to S3...")
 
-        # Upload the JSON data to the S3 bucket with the adjusted file name and add tags
-        bucket_name = 'raw-data-geoshield'
+        # Define the bucket name based on the presence of custom_uuid
+        bucket_name = 'raw-data-geoshield' if not custom_uuid else 'custom-raw-data-geoshield'
+
+        # Upload the JSON data to the S3 bucket with the adjusted file name
         tags = [{'Key': 'Category', 'Value': category}]
         s3.put_object(Bucket=bucket_name, Key=file_name, Body=summaries_json, Tagging='&'.join(['{}={}'.format(tag['Key'], tag['Value']) for tag in tags]))
         

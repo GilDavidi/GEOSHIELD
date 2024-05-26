@@ -5,7 +5,7 @@ import Levenshtein
 from datetime import datetime, timedelta
 import uuid
 import traceback
-
+import re
 
 def load_json_from_s3(bucket_name, file_key):
     s3 = boto3.client('s3')
@@ -87,12 +87,32 @@ def no_has_corellation_flag(objects):
         if obj.get('Key') == 'Corellation_flag':
             return False
     return True
+    
+def extract_uuid(filename):
+    # Define the regex pattern for a UUID
+    pattern = r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
+    
+    # Search for the pattern in the filename
+    match = re.search(pattern, filename)
+    
+    # If a match is found, return the matched string (the UUID)
+    if match:
+        return match.group(0)
+    else:
+        return None
 
 def lambda_handler(event, context):
     try:
         # S3 bucket name
-        input_bucket_name = "classified-data-geoshield"
-        output_bucket_name = "maching-events-geoshield"
+        bucket_name = event['Records'][0]['s3']['bucket']['name']
+        print("bucket_name: " + bucket_name)
+        
+        if bucket_name == 'classified-data-geoshield':
+            input_bucket_name = "classified-data-geoshield"
+            output_bucket_name = "maching-events-geoshield"
+        else:
+            input_bucket_name = "custom-classified-data-geoshield"
+            output_bucket_name = "custom-matching-events-geoshield"
         
         # Extracting category from the event 
         print("event: " + str(event))
@@ -128,7 +148,7 @@ def lambda_handler(event, context):
         today_date = datetime.now().strftime('%Y-%m-%d')
         for obj in response.get('Contents', []):
             obj_key = obj['Key']
-            obj_tags = s3.get_object_tagging(Bucket='classified-data-geoshield', Key=obj_key)['TagSet']
+            obj_tags = s3.get_object_tagging(Bucket=input_bucket_name, Key=obj_key)['TagSet']
             for tag in obj_tags:
                 if tag['Key'] == 'Category' and tag['Value'] == category:
                     last_modified = obj['LastModified'].strftime('%Y-%m-%d')
@@ -147,7 +167,7 @@ def lambda_handler(event, context):
             }
 
         # Sort files by last modified date in descending order
-        filtered_objects.sort(key=lambda x: s3.head_object(Bucket='classified-data-geoshield', Key=x)['LastModified'], reverse=True)
+        filtered_objects.sort(key=lambda x: s3.head_object(Bucket=input_bucket_name, Key=x)['LastModified'], reverse=True)
 
         # Select the newest two files
         newest_files = filtered_objects[:2]
@@ -183,73 +203,96 @@ def lambda_handler(event, context):
             avg_score = bucket["average_score"]
             count = bucket["count"] / 10
             bucket["final_score"] = (avg_score * 0.7) + (count * 0.3)
-        
-        today = datetime.now().strftime('%Y-%m-%d')
-
-        file_exists_today = False
-        matching_category = None
-        
-        # List all files in the S3 bucket
-        response = s3.list_objects_v2(Bucket=output_bucket_name)
-        
-        # Check if any file matches today's date and category
-        for obj in response.get('Contents', []):
-            file_key = obj['Key']
-            last_modified = obj['LastModified'].strftime('%Y-%m-%d')
-            last_modified_with_time = obj['LastModified'].strftime('%Y-%m-%d %H:%M')  # Printing last modified date with current hour and minute
-            print("Last modified date with time for file", file_key + ":", last_modified_with_time)
-            # Check if the file's last modified date matches today's date
-            if today == last_modified:
-                response_tags = s3.get_object_tagging(Bucket=output_bucket_name, Key=file_key)
-                print("found file: "+ file_key)
-                for tag in response_tags['TagSet']:
-                    # Check if the file's category matches the event's category
-                    if tag['Key'] == 'Category':
-                        if tag['Value'] == category:
-                            file_exists_today = True
-                            break
+        if  input_bucket_name == "classified-data-geoshield":
+            today = datetime.now().strftime('%Y-%m-%d')
+    
+            file_exists_today = False
+            matching_category = None
+            
+            # List all files in the S3 bucket
+            response = s3.list_objects_v2(Bucket=output_bucket_name)
+            
+            # Check if any file matches today's date and category
+            for obj in response.get('Contents', []):
+                file_key = obj['Key']
+                last_modified = obj['LastModified'].strftime('%Y-%m-%d')
+                last_modified_with_time = obj['LastModified'].strftime('%Y-%m-%d %H:%M')  # Printing last modified date with current hour and minute
+                print("Last modified date with time for file", file_key + ":", last_modified_with_time)
+                # Check if the file's last modified date matches today's date
+                if today == last_modified:
+                    response_tags = s3.get_object_tagging(Bucket=output_bucket_name, Key=file_key)
+                    print("found file: "+ file_key)
+                    for tag in response_tags['TagSet']:
+                        # Check if the file's category matches the event's category
+                        if tag['Key'] == 'Category':
+                            if tag['Value'] == category:
+                                file_exists_today = True
+                                break
+                if file_exists_today:
+                    break
+            
+            # If a matching file exists, append new information to it
             if file_exists_today:
-                break
+    
+                # Upload the updated content back to S3
+                s3.put_object(Bucket=output_bucket_name, Key=file_key, Body=json.dumps(filtered_buckets))
+                
+                # Add category tag to the file in S3
+                s3.put_object_tagging(
+                    Bucket=output_bucket_name,
+                    Key=file_key,
+                    Tagging={
+                        'TagSet': [
+                            {
+                                'Key': 'Category',
+                                'Value': category
+                            }
+                        ]
+                    }
+                )
+                print(f"Exists {file_key} save successfully!")
+                
+            else:
+                file_name = f'matching_messages_{str(uuid.uuid4())}.json'
+                # Proceed with regular process of saving processed messages as a new file in S3
+                s3.put_object(Bucket=output_bucket_name, Key=file_name, Body=json.dumps(filtered_buckets))
+                # Add category tag to the file in S3
+                s3.put_object_tagging(
+                    Bucket=output_bucket_name,
+                    Key=file_name,
+                    Tagging={
+                        'TagSet': [
+                            {
+                                'Key': 'Category',
+                                'Value': category
+                            }
+                        ]
+                    }
+                )
+                print("New file data  " + file_name + " processed and saved successfully!")
         
-        # If a matching file exists, append new information to it
-        if file_exists_today:
-
-            # Upload the updated content back to S3
-            s3.put_object(Bucket=output_bucket_name, Key=file_key, Body=json.dumps(filtered_buckets))
-            
-            # Add category tag to the file in S3
-            s3.put_object_tagging(
-                Bucket=output_bucket_name,
-                Key=file_key,
-                Tagging={
-                    'TagSet': [
-                        {
-                            'Key': 'Category',
-                            'Value': category
-                        }
-                    ]
-                }
-            )
-            print(f"Exists {file_key} save successfully!")
-            
         else:
-            file_name = f'matching_messages_{str(uuid.uuid4())}.json'
-            # Proceed with regular process of saving processed messages as a new file in S3
-            s3.put_object(Bucket=output_bucket_name, Key=file_name, Body=json.dumps(filtered_buckets))
-            # Add category tag to the file in S3
-            s3.put_object_tagging(
-                Bucket=output_bucket_name,
-                Key=file_name,
-                Tagging={
-                    'TagSet': [
-                        {
-                            'Key': 'Category',
-                            'Value': category
-                        }
-                    ]
-                }
-            )
-            print("New file data  " + file_name + " processed and saved successfully!")
+                uuid=extract_uuid(telegram_file_key)
+                print(uuid)
+                file_name = f'matching_messages_{str(uuid)}.json'
+                # Proceed with regular process of saving processed messages as a new file in S3
+                s3.put_object(Bucket=output_bucket_name, Key=file_name, Body=json.dumps(filtered_buckets))
+                # Add category tag to the file in S3
+                s3.put_object_tagging(
+                    Bucket=output_bucket_name,
+                    Key=file_name,
+                    Tagging={
+                        'TagSet': [
+                            {
+                                'Key': 'Category',
+                                'Value': category
+                            }
+                        ]
+                    }
+                )
+                print("New file data  " + file_name + " processed and saved successfully!")
+            
+            
         
         
         # ADD 'Corellation_flag' tag from files

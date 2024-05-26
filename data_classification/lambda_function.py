@@ -9,7 +9,7 @@ lambda_client = boto3.client('lambda')
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-def classify_and_invoke(messages, file_name, category):
+def classify_and_invoke(messages, file_name, category, bucket_name):
     try:
         # Define the endpoint of the model service
         model_endpoint = config['EC2']['URL']
@@ -49,6 +49,7 @@ def classify_and_invoke(messages, file_name, category):
         payload = {
             'file_name': file_name,
             'category': category,
+            'bucket_name': bucket_name,
             'messages': [msg for msg in messages if msg.get('classification') is not None]
         }
 
@@ -71,13 +72,15 @@ def lambda_handler(event, context):
         file_name = event['file_name']
         messages = event['messages']
         category = event['category']
+        bucket_name = event['bucket_name']
         print("New " + file_name + " upload")
 
         # Classify messages and invoke data_extract_location
         result = classify_and_invoke(
-            messages=messages,
-            file_name=file_name,
-            category=category  # Pass the category from the event
+            messages,
+            file_name,
+            category,  # Pass the category from the event
+            bucket_name
         )
 
         return {

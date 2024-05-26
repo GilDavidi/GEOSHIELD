@@ -33,16 +33,32 @@ def lambda_handler(event, context):
         string_session = secret['string_session']
         
         # Reading Configs
-        category = event['category']
         config = configparser.ConfigParser()
         config.read("config.ini")
         bucket_name = config['S3']['bucket_name']
         
+        # Check if custom selection was performed
+        custom_uuid = event.get('custom_uuid', None)
+        if custom_uuid:
+            # Access the correct file in the S3 bucket
+            file_name = f'channels_config_{custom_uuid}.json'
+            obj = s3.get_object(Bucket='s3-files-geoshield', Key=file_name)
+            file_content = obj['Body'].read().decode('utf-8')
+            config_data = json.loads(file_content)
+            channels = list(config_data.get("Telegram_Channels", {}).values())
+            print(f"Custom UUID found: {custom_uuid}")
+            print(f"Channels from config: {channels}")
+        else:
+            # Default behavior
+            channels = ['https://t.me/arabworld301']
+            
+        category = event['category']
+
         # Create the TelegramClient using the StringSession
         client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
         # Running the asyncio loop
-        all_messages = asyncio.get_event_loop().run_until_complete(fetch_telegram_messages(client))
+        all_messages = asyncio.get_event_loop().run_until_complete(fetch_telegram_messages(client, channels))
 
         print("Telegram messages fetched.")
 
@@ -75,16 +91,28 @@ def lambda_handler(event, context):
         # Convert the list of selected messages to JSON
         json_data = json.dumps(selected_messages)
 
-        # Adjust the file name to include the UUID
-        file_name = f'telegram_messages_{str(uuid.uuid4())}.json'
+        # Determine the folder and file name for saving
+        if custom_uuid:
+            bucket_name = 'custom-raw-data-geoshield'
+            file_name = f'telegram_messages_{custom_uuid}.json'
+        else:
+            file_name = f'telegram_messages_{str(uuid.uuid4())}.json'
 
-        
+        print(f"Saving file to S3 with name: {file_name}")
+
         # Upload the JSON data to the S3 bucket with the adjusted file name
         upload_byte_stream = bytes(json_data.encode('UTF-8'))
-        s3.put_object(Bucket=bucket_name, Key=file_name, Body=upload_byte_stream)
+        response = s3.put_object(Bucket=bucket_name, Key=file_name, Body=upload_byte_stream)
+
+        # Print response from S3
+        print(f"S3 put_object response: {response}")
+
+        # Check the response for success
+        if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+            raise Exception(f"Error uploading file to S3: {response}")
 
         # Add tags to the uploaded S3 object
-        s3.put_object_tagging(
+        tag_response = s3.put_object_tagging(
             Bucket=bucket_name,
             Key=file_name,
             Tagging={
@@ -96,6 +124,9 @@ def lambda_handler(event, context):
                 ]
             }
         )
+
+        # Print response from S3 tagging
+        print(f"S3 put_object_tagging response: {tag_response}")
 
         print(f"Telegram messages saved to S3 with category: {category}")
 
@@ -109,7 +140,7 @@ def lambda_handler(event, context):
             "statusCode": 500,
             "body": json.dumps({"error": str(e)})
         }
-        
+
 def extract_url(entities):
     # Iterate through entities to find the URL
     for entity in entities:
@@ -117,20 +148,10 @@ def extract_url(entities):
             return entity.get('url', '')
     return ''  # Return empty string if URL not found    
 
-
-async def fetch_telegram_messages(client):
+async def fetch_telegram_messages(client, channels):
     await client.start()  # Start the client
 
     print("Client Created")
-
-    user_input_channel = 'https://t.me/englishabuali'
-
-    if user_input_channel.isdigit():
-        entity = PeerChannel(int(user_input_channel))
-    else:
-        entity = user_input_channel
-
-    my_channel = await client.get_entity(entity)
 
     all_messages = []
 
@@ -138,49 +159,56 @@ async def fetch_telegram_messages(client):
     two_days_ago = datetime.now() - timedelta(days=1)
     two_days_ago_timestamp = int(two_days_ago.timestamp())
 
-    offset_id = 0
-    limit = 100
-    
-    total_count_limit = 0
+    for user_input_channel in channels:
+        if user_input_channel.isdigit():
+            entity = PeerChannel(int(user_input_channel))
+        else:
+            entity = user_input_channel
 
-    # Set the search query to an empty string (to match all messages)
-    search_query = ""
+        my_channel = await client.get_entity(entity)
 
-    # Set the message filter to match all messages (InputMessagesFilterEmpty)
-    message_filter = InputMessagesFilterEmpty()
+        offset_id = 0
+        limit = 100
+        
+        total_count_limit = 0
 
-    # Fetch messages until there are no more messages
-    while True:
-        print("Current Offset ID:", offset_id, "; Total Messages:", len(all_messages))
-        history = await client(SearchRequest(
-            peer=my_channel,
-            q=search_query,
-            filter=message_filter,
-            min_date=two_days_ago_timestamp,
-            max_date=datetime.now(), 
-            offset_id=offset_id,
-            add_offset=0,
-            limit=limit,
-            max_id=0,
-            min_id=0,
-            hash=0
-        ))
-        if not history.messages:
-            break
-        messages = history.messages
-        for message in messages:
-            
-            if "\n\nTo comment, follow this link" in message.message:
-                # Remove the unwanted sentence
-                message.message = message.message.replace("\n\nTo comment, follow this link", "")
-            
-            # Append the original message dictionary to all_messages
-            all_messages.append(message.to_dict())
+        # Set the search query to an empty string (to match all messages)
+        search_query = ""
 
-        offset_id = messages[-1].id  # Simplified from: messages[len(messages) - 1].id
-        if total_count_limit != 0 and len(all_messages) >= total_count_limit:
-            break
-    
+        # Set the message filter to match all messages (InputMessagesFilterEmpty)
+        message_filter = InputMessagesFilterEmpty()
+
+        # Fetch messages until there are no more messages
+        while True:
+            print("Current Offset ID:", offset_id, "; Total Messages:", len(all_messages))
+            history = await client(SearchRequest(
+                peer=my_channel,
+                q=search_query,
+                filter=message_filter,
+                min_date=two_days_ago_timestamp,
+                max_date=datetime.now(), 
+                offset_id=offset_id,
+                add_offset=0,
+                limit=limit,
+                max_id=0,
+                min_id=0,
+                hash=0
+            ))
+            if not history.messages:
+                break
+            messages = history.messages
+            for message in messages:
+                if "\n\nTo comment, follow this link" in message.message:
+                    # Remove the unwanted sentence
+                    message.message = message.message.replace("\n\nTo comment, follow this link", "")
+                
+                # Append the original message dictionary to all_messages
+                all_messages.append(message.to_dict())
+
+            offset_id = messages[-1].id  # Simplified from: messages[len(messages) - 1].id
+            if total_count_limit != 0 and len(all_messages) >= total_count_limit:
+                break
+
     # Disconnect the client after fetching messages
     await client.disconnect()  
 
