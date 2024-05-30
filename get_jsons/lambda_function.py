@@ -1,5 +1,6 @@
 import json
 import boto3
+import re
 from datetime import datetime
 
 def load_json_from_s3(bucket_name, file_key):
@@ -7,86 +8,93 @@ def load_json_from_s3(bucket_name, file_key):
     response = s3.get_object(Bucket=bucket_name, Key=file_key)
     return json.loads(response['Body'].read().decode('utf-8'))
 
-def filter_messages_by_category(messages, category):
-    return [message for message in messages if message.get("classification") == category]
-
-def remove_duplicate_urls(messages):
-    unique_urls = set()
-    unique_messages = []
-    for message in messages:
-        url = message.get('url')
-        if url not in unique_urls:
-            unique_urls.add(url)
-            unique_messages.append(message)
-    return unique_messages
+def extract_uuid(filename):
+    pattern = r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
+    match = re.search(pattern, filename)
+    if match:
+        return match.group(0)
+    else:
+        return None
 
 def lambda_handler(event, context):
     try:
-        # Print received event and query parameters
         print("Received event:", json.dumps(event))
+
+        query_params = event.get('queryStringParameters', {})
+        print("Query Parameters:", query_params)
+
+        uuid_param = query_params.get('uuid')
         
-        # S3 bucket names
+        print(uuid_param)
+        
         classified_bucket = "classified-data-geoshield"
         matching_bucket = "maching-events-geoshield"
 
-        # Get the query parameters
-        query_params = event.get('queryStringParameters', {})
-        print("Query Parameters:", query_params)
-        category = query_params.get('category')
-        start_date = query_params.get('start_date')
-        end_date = query_params.get('end_date')
+        if uuid_param:
+            classified_bucket = "custom-classified-data-geoshield"
+            matching_bucket = "custom-matching-events-geoshield"
 
-        # Check if 'category' parameter exists
-        if not category:
-            # Return a 400 status code if category parameter is missing
-            return {
-                'statusCode': 400,
-                'body': "Category parameter not found in query string.",
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
-                    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-                }
-            }
-
-        # Get the list of objects in the S3 buckets including their tags
         s3 = boto3.client('s3')
-        
-        # Filter files by last modified date and category for classified bucket
-        response_classified = s3.list_objects_v2(Bucket=classified_bucket, FetchOwner=True)
-        classified_files = []
-        if 'Contents' in response_classified:
-            for file in response_classified['Contents']:
-                last_modified = file['LastModified']
-                last_modified_date = last_modified.strftime('%Y-%m-%d')
-                if start_date <= last_modified_date <= end_date:
-                    # Get tags for the object
-                    tags_response = s3.get_object_tagging(Bucket=classified_bucket, Key=file['Key'])
-                    object_tags = tags_response.get('TagSet', [])
-                    # Check if the object has a 'category' tag and it matches the specified category
-                    if any(tag['Key'] == 'Category' and tag['Value'] == category for tag in object_tags):
+
+        if uuid_param:
+            response_classified = s3.list_objects_v2(Bucket=classified_bucket, FetchOwner=True)
+            classified_files = []
+            if 'Contents' in response_classified:
+                for file in response_classified['Contents']:
+                    file_uuid = extract_uuid(file['Key'])
+                    if file_uuid == uuid_param:
                         classified_files.append(file['Key'])
 
-        # Filter files by last modified date and category for matching bucket
-        response_matching = s3.list_objects_v2(Bucket=matching_bucket, FetchOwner=True)
-        matching_files = []
-        if 'Contents' in response_matching:
-            for file in response_matching['Contents']:
-                last_modified = file['LastModified']
-                last_modified_date = last_modified.strftime('%Y-%m-%d')
-                if start_date <= last_modified_date <= end_date:
-                    # Get tags for the object
-                    tags_response = s3.get_object_tagging(Bucket=matching_bucket, Key=file['Key'])
-                    object_tags = tags_response.get('TagSet', [])
-                    # Check if the object has a 'category' tag and it matches the specified category
-                    if any(tag['Key'] == 'Category' and tag['Value'] == category for tag in object_tags):
+            response_matching = s3.list_objects_v2(Bucket=matching_bucket, FetchOwner=True)
+            matching_files = []
+            if 'Contents' in response_matching:
+                for file in response_matching['Contents']:
+                    file_uuid = extract_uuid(file['Key'])
+                    if file_uuid == uuid_param:
                         matching_files.append(file['Key'])
+        else:
+            category = query_params.get('category')
+            start_date = query_params.get('start_date')
+            end_date = query_params.get('end_date')
 
-        # Load JSON files from classified bucket
+            if not category:
+                return {
+                    'statusCode': 400,
+                    'body': "Category parameter not found in query string.",
+                    'headers': {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
+                        'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+                    }
+                }
+
+            response_classified = s3.list_objects_v2(Bucket=classified_bucket, FetchOwner=True)
+            classified_files = []
+            if 'Contents' in response_classified:
+                for file in response_classified['Contents']:
+                    last_modified = file['LastModified']
+                    last_modified_date = last_modified.strftime('%Y-%m-%d')
+                    if start_date <= last_modified_date <= end_date:
+                        tags_response = s3.get_object_tagging(Bucket=classified_bucket, Key=file['Key'])
+                        object_tags = tags_response.get('TagSet', [])
+                        if any(tag['Key'] == 'Category' and tag['Value'] == category for tag in object_tags):
+                            classified_files.append(file['Key'])
+
+            response_matching = s3.list_objects_v2(Bucket=matching_bucket, FetchOwner=True)
+            matching_files = []
+            if 'Contents' in response_matching:
+                for file in response_matching['Contents']:
+                    last_modified = file['LastModified']
+                    last_modified_date = last_modified.strftime('%Y-%m-%d')
+                    if start_date <= last_modified_date <= end_date:
+                        tags_response = s3.get_object_tagging(Bucket=matching_bucket, Key=file['Key'])
+                        object_tags = tags_response.get('TagSet', [])
+                        if any(tag['Key'] == 'Category' and tag['Value'] == category for tag in object_tags):
+                            matching_files.append(file['Key'])
+
         gdelt_articles = []
         telegram_messages = []
         for file_key in classified_files:
-            # Print loading file from S3
             print("Loading file from S3:", file_key)
             json_data = load_json_from_s3(classified_bucket, file_key)
             if 'gdelt' in file_key:
@@ -94,19 +102,12 @@ def lambda_handler(event, context):
             elif 'telegram' in file_key:
                 telegram_messages.extend(json_data)
 
-        # Load JSON files from matching bucket
         matching_messages = []
         for file_key in matching_files:
-            # Print loading file from S3
             print("Loading file from S3:", file_key)
             matching_json_data = load_json_from_s3(matching_bucket, file_key)
             matching_messages.append(matching_json_data)
 
-        # Remove duplicate messages based on URL
-        gdelt_articles = remove_duplicate_urls(gdelt_articles)
-        telegram_messages = remove_duplicate_urls(telegram_messages)
-
-        # Prepare response body
         response_body = {
             'gdelt_articles': gdelt_articles,
             'telegram_messages': telegram_messages,
@@ -124,7 +125,6 @@ def lambda_handler(event, context):
         }
 
     except Exception as e:
-        # Print and return error message with 500 status code
         error_message = f"An error occurred: {str(e)}"
         print(error_message)
         return {
@@ -140,6 +140,7 @@ def lambda_handler(event, context):
 # Test locally
 event = {
     "queryStringParameters": {
+        "uuid": "example-uuid",
         "category": "example_category",
         "start_date": "2024-01-01",
         "end_date": "2024-05-01"

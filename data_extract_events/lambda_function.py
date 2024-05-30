@@ -61,7 +61,7 @@ def process_message(message, category):
         
         event_breakdown = None
         
-        event_breakdown_question = f"What are the {category} events in the text? Write it only in English, in the form of a list of reports (without conclusions and without some summary sentence after the events or title) (For me, an event is an event that can be placed on a map - that is, with a location). If several events are related to each other, list them as a single event in brief"
+        event_breakdown_question = f"Identify and list only current events of {category} that are reported in text that can be placed on a map (ie, have a specific location). Each event should be formatted as a short report in English. Note the target event - a news push that reports an event that is happening in the current time frame and belongs to to the category {category}, and not a past event. If no relevant events were found, return 'null'."
         # Define maximum number of attempts to find a valid location
         max_attempts = 3
         attempt_count = 0
@@ -119,20 +119,23 @@ def lambda_handler(event, context):
         print("Today's date with time:", today_with_time)
         file_exists_today = False
         matching_category = None
-     
+
         print("Extracting data from " + file_name + " started")
-            
+
         # Define the maximum number of workers for concurrent processing
         max_workers = 10
-            
-            # Process messages concurrently
+
+        # Process messages concurrently
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             processed_messages = list(executor.map(process_message, messages, [category] * len(messages)))
-        
+
+        # Filter out messages with 'null' (in any case) in event_breakdown
+        filtered_messages = [msg for msg in processed_messages if "null" not in msg["event_breakdown"].lower()]
+
         if bucket_name == 'classified-data-geoshield':
             # List all files in the S3 bucket
             response = s3.list_objects_v2(Bucket=bucket_name)
-            
+
             # Check if any file matches today's date and category
             for obj in response.get('Contents', []):
                 file_key = obj['Key']
@@ -141,9 +144,9 @@ def lambda_handler(event, context):
                 print("Last modified date with time for file", file_key + ":", last_modified_with_time)
                 # Check if the file's last modified date matches today's date
                 if today == last_modified:
-                    if compare_first_two_words(file_key,file_name):
+                    if compare_first_two_words(file_key, file_name):
                         response_tags = s3.get_object_tagging(Bucket=bucket_name, Key=file_key)
-                        print("found file: "+ file_key)
+                        print("found file: " + file_key)
                         for tag in response_tags['TagSet']:
                             print(tag)
                             # Check if the file's category matches the event's category
@@ -154,21 +157,21 @@ def lambda_handler(event, context):
                                     break
                 if file_exists_today:
                     break
-            
+
             # If a matching file exists, append new information to it
             if file_exists_today:
                 # Download the file from S3
                 response = s3.get_object(Bucket=bucket_name, Key=file_key)
                 file_content = response['Body'].read().decode('utf-8')
                 existing_messages = json.loads(file_content)
-                
+
                 # Filter out existing messages from the processed messages
-                all_message = existing_messages+processed_messages
+                all_message = existing_messages + filtered_messages
                 updated_messages = remove_duplicate_urls(all_message)
-    
+
                 # Upload the updated content back to S3
                 s3.put_object(Bucket=bucket_name, Key=file_key, Body=json.dumps(updated_messages))
-                
+
                 # Add category tag to the file in S3
                 s3.put_object_tagging(
                     Bucket=bucket_name,
@@ -183,11 +186,10 @@ def lambda_handler(event, context):
                     }
                 )
                 print(f"Data appended to {file_key} successfully!")
-                
-                
+
             else:
                 # Proceed with regular process of saving processed messages as a new file in S3
-                s3.put_object(Bucket=bucket_name, Key=file_name, Body=json.dumps(processed_messages))
+                s3.put_object(Bucket=bucket_name, Key=file_name, Body=json.dumps(filtered_messages))
                 # Add category tag to the file in S3
                 s3.put_object_tagging(
                     Bucket=bucket_name,
@@ -202,10 +204,10 @@ def lambda_handler(event, context):
                     }
                 )
                 print("New file data  " + file_name + " processed and saved successfully!")
-        
+
         else:
-          # Proceed with regular process of saving processed messages as a new file in S3
-            s3.put_object(Bucket=bucket_name, Key=file_name, Body=json.dumps(processed_messages))
+            # Proceed with regular process of saving processed messages as a new file in S3
+            s3.put_object(Bucket=bucket_name, Key=file_name, Body=json.dumps(filtered_messages))
             # Add category tag to the file in S3
             s3.put_object_tagging(
                 Bucket=bucket_name,
@@ -220,14 +222,14 @@ def lambda_handler(event, context):
                 }
             )
             print("New file data  " + file_name + " processed and saved successfully!")
-        
+
         return {
             'statusCode': 200,
             'body': json.dumps('Files processed and saved successfully!')
         }
     except Exception as e:
         print("Error: " + str(e))
-        traceback.print_exc()  
+        traceback.print_exc()
         return {
             'statusCode': 500,
             'body': json.dumps({"error": str(e)})

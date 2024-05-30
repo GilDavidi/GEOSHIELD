@@ -3,7 +3,7 @@ import boto3
 from simphile import jaccard_similarity
 import Levenshtein
 from datetime import datetime, timedelta
-import uuid
+import uuid as uuid_module
 import traceback
 import re
 
@@ -76,7 +76,6 @@ def generate_message_buckets(messages, similarity_threshold=0.6):
 
     return message_buckets
 
-
 def upload_to_s3(bucket_name, file_key, file_path):
     s3 = boto3.client('s3')
     s3.upload_file(file_path, bucket_name, file_key)
@@ -106,13 +105,16 @@ def lambda_handler(event, context):
         # S3 bucket name
         bucket_name = event['Records'][0]['s3']['bucket']['name']
         print("bucket_name: " + bucket_name)
-        
+        new_uuid = None
         if bucket_name == 'classified-data-geoshield':
             input_bucket_name = "classified-data-geoshield"
             output_bucket_name = "maching-events-geoshield"
+            new_uuid = str(uuid_module.uuid4())
+            print("This is regular flow")
         else:
             input_bucket_name = "custom-classified-data-geoshield"
             output_bucket_name = "custom-matching-events-geoshield"
+            print("This is custom flow")
         
         # Extracting category from the event 
         print("event: " + str(event))
@@ -253,7 +255,7 @@ def lambda_handler(event, context):
                 print(f"Exists {file_key} save successfully!")
                 
             else:
-                file_name = f'matching_messages_{str(uuid.uuid4())}.json'
+                file_name = f'matching_messages_{new_uuid}.json'
                 # Proceed with regular process of saving processed messages as a new file in S3
                 s3.put_object(Bucket=output_bucket_name, Key=file_name, Body=json.dumps(filtered_buckets))
                 # Add category tag to the file in S3
@@ -270,7 +272,6 @@ def lambda_handler(event, context):
                     }
                 )
                 print("New file data  " + file_name + " processed and saved successfully!")
-        
         else:
                 uuid=extract_uuid(telegram_file_key)
                 print(uuid)

@@ -50,7 +50,7 @@ def lambda_handler(event, context):
             print(f"Channels from config: {channels}")
         else:
             # Default behavior
-            channels = ['https://t.me/arabworld301']
+            channels = ['https://t.me/englishabuali']
             
         category = event['category']
 

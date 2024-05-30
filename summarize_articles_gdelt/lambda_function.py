@@ -2,7 +2,7 @@ from newspaper import Article
 import nltk
 import json
 import boto3
-import uuid 
+import uuid  as uuid_module
 import requests
 
 nltk.data.path.append("/tmp")
@@ -51,8 +51,10 @@ def lambda_handler(event, context):
             # Get the summary of the article
             summary = get_article_text(url)
             
-            unique_id = str(uuid.uuid4()) if custom_uuid else ''  # Generate unique_id if custom_uuid is not null
 
+            unique_id = str(uuid_module.uuid4())
+       
+                 
             # If summary extraction was successful, add article info to summaries list
             if summary:
                 article_info = {
@@ -70,7 +72,7 @@ def lambda_handler(event, context):
         summaries_json = json.dumps(summaries)
 
         # Adjust the file name to include the category and custom_uuid if exists
-        file_name = f'gdelt_articles_{str(uuid.uuid4())}' if not custom_uuid else f'gdelt_articles_{custom_uuid}'
+        file_name = f'gdelt_articles_{str(uuid_module.uuid4())}.json' if not custom_uuid else f'gdelt_articles_{custom_uuid}.json'
 
         print("Uploading data to S3...")
 
