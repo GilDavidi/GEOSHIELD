@@ -188,13 +188,6 @@ def lambda_handler(event, context):
         # Generate message buckets
         message_buckets = generate_message_buckets(all_messages)
         
-        # Check if message_buckets is empty
-        if not message_buckets:
-            print("No similar messages found to be corellated")
-            return {
-                'statusCode': 200,
-                'body': json.dumps('No similar messages found to be corellated')
-            }
             
         # Filter out buckets with count == 0
         filtered_buckets = {k: v for k, v in message_buckets.items() if v["count"] > 0}    
@@ -206,6 +199,7 @@ def lambda_handler(event, context):
             count = bucket["count"] / 10
             bucket["final_score"] = (avg_score * 0.7) + (count * 0.3)
         if  input_bucket_name == "classified-data-geoshield":
+            print("start check for exists file")
             today = datetime.now().strftime('%Y-%m-%d')
     
             file_exists_today = False

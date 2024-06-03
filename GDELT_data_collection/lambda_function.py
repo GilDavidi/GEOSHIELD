@@ -120,7 +120,7 @@ def make_gdelt_request(config, category, domains=None):
     except Exception as e:
         print("Error in make_gdelt_request:", str(e))
         return None
-
+        
 def extract_articles(articles):
     try:
         extracted_articles = []
