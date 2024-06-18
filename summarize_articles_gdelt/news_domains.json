@@ -1,0 +1,73 @@
+{
+  "international": [
+    "cnn.com",
+    "bbc.com",
+    "reuters.com",
+    "aljazeera.com",
+    "nytimes.com",
+    "theguardian.com",
+    "washingtonpost.com",
+    "bloomberg.com",
+    "ft.com",
+    "apnews.com",
+    "afp.com",
+    "dw.com",
+    "news.sky.com",
+    "npr.org",
+    "abcnews.go.com"
+  ],
+  "local": {
+    "Europe": [
+      "bbc.co.uk",
+      "independent.co.uk",
+      "telegraph.co.uk",
+      "thetimes.co.uk",
+      "lemonde.fr",
+      "lefigaro.fr",
+      "spiegel.de",
+      "faz.net",
+      "elpais.com",
+      "repubblica.it",
+      "corriere.it",
+      "telegraaf.nl"
+    ],
+    "Asia": [
+      "timesofindia.indiatimes.com",
+      "thehindu.com",
+      "chinadaily.com.cn",
+      "straitstimes.com",
+      "japantimes.co.jp",
+      "scmp.com",
+      "koreatimes.co.kr",
+      "dawn.com",
+      "nationthailand.com"
+    ],
+    "Middle East": [
+      "alarabiya.net",
+      "haaretz.com",
+      "jpost.com",
+      "gulfnews.com",
+      "thenationalnews.com"
+    ],
+    "Africa": [
+      "allafrica.com",
+      "mg.co.za",
+      "nation.africa",
+      "standardmedia.co.ke",
+      "news24.com"
+    ],
+    "Americas": [
+      "theglobeandmail.com",
+      "cbc.ca/news",
+      "lanacion.com.ar",
+      "clarin.com",
+      "folha.uol.com.br",
+      "oglobo.globo.com"
+    ],
+    "Oceania": [
+      "smh.com.au",
+      "theage.com.au",
+      "nzherald.co.nz"
+    ]
+  }
+}

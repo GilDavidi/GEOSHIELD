@@ -129,12 +129,14 @@ def extract_articles(articles):
             article_title = article['title']
             article_url = article['url']
             article_date = datetime.strptime(article['seendate'], "%Y%m%dT%H%M%SZ").strftime("%Y-%m-%d %H:%M")
+            article_domain = article['domain']
             article_date_format = datetime.strptime(article['seendate'], "%Y%m%dT%H%M%SZ").strftime('%Y-%m-%d')
             if article_date_format == today_date:
                 extracted_article = {
                     "title": article_title,
                     "date": article_date,
                     "url": article_url,
+                    "domain": article_domain
                 }
                 extracted_articles.append(extracted_article)
 

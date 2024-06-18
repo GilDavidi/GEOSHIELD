@@ -5,11 +5,27 @@ import boto3
 import uuid  as uuid_module
 import requests
 
+
+# Download nltk data to /tmp
 nltk.data.path.append("/tmp")
 nltk.download("punkt", download_dir="/tmp")
 
 # AWS S3 client
 s3 = boto3.client('s3')
+
+# Load domains from JSON file
+def load_domains(filename):
+    with open(filename, 'r') as file:
+        return json.load(file)
+
+# Classify domain
+def classify_domain(domain, domain_data):
+    if domain in domain_data["international"]:
+        return "International"
+    for region, domains in domain_data["local"].items():
+        if domain in domains:
+            return "Local - " + region
+    return "Unknown"
 
 def get_article_text(url):
     try:
@@ -30,6 +46,9 @@ def get_article_text(url):
 
 def lambda_handler(event, context):
     try:
+        # Load domain data
+        domain_data = load_domains("news_domains.json")
+        
         # Extract the category and JSON data from the event
         category = event['category']
         json_data = json.loads(event['json_data'])
@@ -45,16 +64,18 @@ def lambda_handler(event, context):
             title = article_data['title']
             date = article_data['date']
             url = article_data['url']
-            
+            domain = article_data['domain']
+
             print("Processing article:", title)
             
+            # Classify the domain
+            domain_classification = classify_domain(domain, domain_data)
+
             # Get the summary of the article
             summary = get_article_text(url)
             
-
             unique_id = str(uuid_module.uuid4())
-       
-                 
+                   
             # If summary extraction was successful, add article info to summaries list
             if summary:
                 article_info = {
@@ -62,6 +83,8 @@ def lambda_handler(event, context):
                     'title': title,
                     'date': date,
                     'url': url,
+                    'domain': domain,
+                    'domain_classification': domain_classification,
                     'message': summary
                 }
                 summaries.append(article_info)

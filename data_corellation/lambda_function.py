@@ -15,7 +15,7 @@ def load_json_from_s3(bucket_name, file_key):
 def levenshtein_similarity(text1, text2):
     return 1 - Levenshtein.distance(text1, text2) / max(len(text1), len(text2))
 
-def generate_message_buckets(messages, similarity_threshold=0.6):
+def generate_message_buckets(messages):
     message_buckets = {}  # Dictionary to store similar messages
     assigned_ids = set()  # Set to keep track of IDs already assigned to a group
 
@@ -43,8 +43,26 @@ def generate_message_buckets(messages, similarity_threshold=0.6):
                     text2 = message2["message"]
                     jaccard_sim = jaccard_similarity(text1, text2)
                     levenshtein_sim = levenshtein_similarity(text1, text2)
+                    
+                    # Check if the time difference is within 0.5 to 2 hours
+                    date1 = datetime.strptime(message1["date"], "%Y-%m-%d %H:%M")
+                    date2 = datetime.strptime(message2["date"], "%Y-%m-%d %H:%M")
+                    time_diff = abs((date2 - date1).total_seconds()) / 3600  # Difference in hours
 
-                    if jaccard_sim > similarity_threshold and levenshtein_sim > similarity_threshold:
+                    # Log time difference for debugging
+                    print(f"Time difference between message {i} and message {j}: {time_diff} hours")
+
+                    if 0.3 <= jaccard_sim <= 0.7 and 0.3 <= levenshtein_sim <= 0.7:
+                        # Additional filtering rule for GDELT messages
+                        if "channel_id" not in message1 and "channel_id" not in message2:
+                            domain1 = message1["domain_classification"]
+                            domain2 = message2["domain_classification"]
+
+                            if domain1 == "International" and ("Local" in domain2 or domain2 == "Unknown") and time_diff > 0.5:
+                                continue
+                            elif domain2 == "International" and ("Local" in domain1 or domain1 == "Unknown") and time_diff > 0.5:
+                                continue
+
                         # Check if message2 already assigned to a group
                         assigned_to_group = False
                         for bucket in message_buckets.values():
@@ -53,19 +71,27 @@ def generate_message_buckets(messages, similarity_threshold=0.6):
                                 break
 
                         if not assigned_to_group:
-                            source = "Telegram" if "channel_id" in message2 else "GDELT"
-                            message_buckets[message1["id"]]["messages"].append({
-                                "id": message2["id"],
-                                "message": message2["message"],
-                                "url": message2["url"],
-                                "date": message2["date"],
-                                "source": source
-                            })
-                            message_buckets[message1["id"]]["total_score"] += (jaccard_sim + levenshtein_sim) / 2
-                            message_buckets[message1["id"]]["count"] += 1
+                            # Check for duplicate messages within the current bucket
+                            is_duplicate = False
+                            for msg in message_buckets[message1["id"]]["messages"]:
+                                if msg["message"] == message2["message"]:
+                                    is_duplicate = True
+                                    break
+                            
+                            if not is_duplicate:
+                                source = "Telegram" if "channel_id" in message2 else "GDELT"
+                                message_buckets[message1["id"]]["messages"].append({
+                                    "id": message2["id"],
+                                    "message": message2["message"],
+                                    "url": message2["url"],
+                                    "date": message2["date"],
+                                    "source": source
+                                })
+                                message_buckets[message1["id"]]["total_score"] += (jaccard_sim + levenshtein_sim) / 2
+                                message_buckets[message1["id"]]["count"] += 1
 
-                            # Add message2 ID to assigned_ids
-                            assigned_ids.add(message2["id"])
+                                # Add message2 ID to assigned_ids
+                                assigned_ids.add(message2["id"])
 
     # Calculate average score for each bucket
     for bucket in message_buckets.values():
@@ -76,11 +102,12 @@ def generate_message_buckets(messages, similarity_threshold=0.6):
 
     return message_buckets
 
+
+
 def upload_to_s3(bucket_name, file_key, file_path):
     s3 = boto3.client('s3')
     s3.upload_file(file_path, bucket_name, file_key)
     
-# Function to check if the list contains a dictionary with Key 'Corellation_flag'
 def no_has_corellation_flag(objects):
     for obj in objects:
         if obj.get('Key') == 'Corellation_flag':
@@ -88,17 +115,13 @@ def no_has_corellation_flag(objects):
     return True
     
 def extract_uuid(filename):
-    # Define the regex pattern for a UUID
     pattern = r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
-    
-    # Search for the pattern in the filename
     match = re.search(pattern, filename)
-    
-    # If a match is found, return the matched string (the UUID)
     if match:
         return match.group(0)
     else:
         return None
+
 
 def lambda_handler(event, context):
     try:
@@ -188,7 +211,7 @@ def lambda_handler(event, context):
         # Generate message buckets
         message_buckets = generate_message_buckets(all_messages)
         
-            
+
         # Filter out buckets with count == 0
         filtered_buckets = {k: v for k, v in message_buckets.items() if v["count"] > 0}    
 
@@ -198,6 +221,8 @@ def lambda_handler(event, context):
             avg_score = bucket["average_score"]
             count = bucket["count"] / 10
             bucket["final_score"] = (avg_score * 0.7) + (count * 0.3)
+            if  bucket["final_score"] >= 1:
+                bucket["final_score"] = 1;
         if  input_bucket_name == "classified-data-geoshield":
             print("start check for exists file")
             today = datetime.now().strftime('%Y-%m-%d')
@@ -286,9 +311,6 @@ def lambda_handler(event, context):
                     }
                 )
                 print("New file data  " + file_name + " processed and saved successfully!")
-            
-            
-        
         
         # ADD 'Corellation_flag' tag from files
         s3.put_object_tagging(

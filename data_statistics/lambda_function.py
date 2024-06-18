@@ -38,22 +38,20 @@ def get_point(location):
         print(f"Failed to geocode location: {location}")
         return None
 
-def is_physically_contained(country_name, sub_location):
-    print(f"Checking if location '{sub_location}' is within country '{country_name}'")
-    country_polygon = get_country_polygon(country_name)
+def is_physically_contained(country_polygon, sub_location):
+    print(f"Checking if location '{sub_location}' is within the country")
     sub_location_point = get_point(sub_location)
 
     if country_polygon and sub_location_point:
         contained = country_polygon.contains(sub_location_point)
-        print(f"Location '{sub_location}' is within country '{country_name}': {contained}")
+        print(f"Location '{sub_location}' is within the country: {contained}")
         return contained
-    print(f"Could not determine containment for location '{sub_location}' in country '{country_name}'")
+    print(f"Could not determine containment for location '{sub_location}'")
     return False
 
-def process_json_files(bucket_name, location):
+def process_json_files(bucket_name, location, country_polygon):
     print(f"Processing JSON files for location: {location} in bucket: {bucket_name}")
     result = defaultdict(lambda: defaultdict(int))
-    country_polygon = get_country_polygon(location)
 
     objects = s3.list_objects_v2(Bucket=bucket_name)
 
@@ -67,7 +65,7 @@ def process_json_files(bucket_name, location):
             message_category = message['classification']
             message_date = pd.to_datetime(message['date']).date()
 
-            if is_physically_contained(location, message_location):
+            if is_physically_contained(country_polygon, message_location):
                 result[message_category][message_date] += 1
                 print(f"Message '{message}' is contained in '{location}', updating result")
 
@@ -120,7 +118,8 @@ def lambda_handler(event, context):
         }
     else:
         print(f"No existing file for location: {location}. Starting processing.")
-        data = process_json_files(bucket_name, location)
+        country_polygon = get_country_polygon(location)
+        data = process_json_files(bucket_name, location, country_polygon)
 
         result = {location: []}
         for category, dates in data.items():
