@@ -8,14 +8,43 @@ import traceback
 import re
 
 def load_json_from_s3(bucket_name, file_key):
+    """
+    Load a JSON file from an S3 bucket.
+
+    Parameters:
+    bucket_name (str): The name of the S3 bucket.
+    file_key (str): The key (path) of the file in the S3 bucket.
+
+    Returns:
+    dict: The parsed JSON data.
+    """
     s3 = boto3.client('s3')
     response = s3.get_object(Bucket=bucket_name, Key=file_key)
     return json.loads(response['Body'].read().decode('utf-8'))
 
 def levenshtein_similarity(text1, text2):
+    """
+    Calculate the Levenshtein similarity between two texts.
+
+    Parameters:
+    text1 (str): The first text.
+    text2 (str): The second text.
+
+    Returns:
+    float: Similarity score between 0 and 1.
+    """
     return 1 - Levenshtein.distance(text1, text2) / max(len(text1), len(text2))
 
 def generate_message_buckets(messages):
+    """
+    Generate buckets of similar messages based on Jaccard and Levenshtein similarity.
+
+    Parameters:
+    messages (list): List of message dictionaries to be compared.
+
+    Returns:
+    dict: A dictionary where keys are message IDs and values are message buckets with similarity scores.
+    """
     message_buckets = {}  # Dictionary to store similar messages
     assigned_ids = set()  # Set to keep track of IDs already assigned to a group
 
@@ -105,16 +134,42 @@ def generate_message_buckets(messages):
 
 
 def upload_to_s3(bucket_name, file_key, file_path):
+    """
+    Upload a file to an S3 bucket.
+
+    Parameters:
+    bucket_name (str): The name of the S3 bucket.
+    file_key (str): The key (path) for the file in the S3 bucket.
+    file_path (str): The local file path to upload.
+    """
     s3 = boto3.client('s3')
     s3.upload_file(file_path, bucket_name, file_key)
     
 def no_has_corellation_flag(objects):
+    """
+    Check if any of the objects have the 'Corellation_flag' tag.
+
+    Parameters:
+    objects (list): List of objects (dictionaries) with tags.
+
+    Returns:
+    bool: True if no 'Corellation_flag' tag is present, False otherwise.
+    """
     for obj in objects:
         if obj.get('Key') == 'Corellation_flag':
             return False
     return True
     
 def extract_uuid(filename):
+    """
+    Check if any of the objects have the 'Corellation_flag' tag.
+
+    Parameters:
+    objects (list): List of objects (dictionaries) with tags.
+
+    Returns:
+    bool: True if no 'Corellation_flag' tag is present, False otherwise.
+    """
     pattern = r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
     match = re.search(pattern, filename)
     if match:
@@ -124,6 +179,16 @@ def extract_uuid(filename):
 
 
 def lambda_handler(event, context):
+    """
+    AWS Lambda function handler to process S3 events.
+
+    Parameters:
+    event (dict): The event data passed by AWS Lambda.
+    context (object): The context object passed by AWS Lambda.
+
+    Returns:
+    dict: The response object with statusCode and body.
+    """
     try:
         # S3 bucket name
         bucket_name = event['Records'][0]['s3']['bucket']['name']

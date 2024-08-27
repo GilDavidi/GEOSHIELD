@@ -1,18 +1,64 @@
-import boto3
 import json
+import boto3
 import googlemaps
 from shapely.geometry import Point
 import geopandas as gpd
 from collections import defaultdict
 import pandas as pd
-
-# Initialize the Google Maps client
-gmaps = googlemaps.Client(key='AIzaSyDdKQY_n89HWZDY7032fvrra6JrECnFAjU')
+import traceback
 
 # Initialize the S3 client
 s3 = boto3.client('s3')
 
+def get_google_maps_key():
+    """
+    Retrieve the Google Maps API key from AWS Secrets Manager.
+
+    Returns:
+        str: The Google Maps API key.
+
+    Raises:
+        ValueError: If the Google Maps API key is not found in the secrets.
+        Exception: For other errors retrieving the secret.
+    """
+    secret_name = "google_api_secrets"
+    region_name = "eu-west-1"
+    
+    # Create a Secrets Manager client
+    client = boto3.client('secretsmanager', region_name=region_name)
+    
+    try:
+        # Retrieve the secret
+        response = client.get_secret_value(SecretId=secret_name)
+        secret = json.loads(response['SecretString'])
+        google_maps_key = secret.get('google_key')
+        
+        if not google_maps_key:
+            raise ValueError("Google Maps API key not found in the secrets")
+        
+        return google_maps_key
+    
+    except Exception as e:
+        print(f"Error retrieving Google Maps API key: {e}")
+        raise
+
+# Initialize the Google Maps client with the retrieved API key
+google_maps_key = get_google_maps_key()
+gmaps = googlemaps.Client(key=google_maps_key)
+
 def get_country_polygon(country_name):
+    """
+    Retrieve the polygon for a given country from the GeoPandas dataset.
+
+    Args:
+        country_name (str): The name of the country to retrieve the polygon for.
+
+    Returns:
+        shapely.geometry.Polygon: The polygon representing the country.
+
+    Raises:
+        ValueError: If the country is not found in the dataset.
+    """
     print(f"Fetching polygon for country: {country_name}")
     world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
     
@@ -26,6 +72,15 @@ def get_country_polygon(country_name):
     return country_polygon
 
 def get_point(location):
+    """
+    Geocode a location to get its latitude and longitude.
+
+    Args:
+        location (str): The location to geocode.
+
+    Returns:
+        shapely.geometry.Point: The point representing the geocoded location, or None if geocoding fails.
+    """
     print(f"Geocoding location: {location}")
     geocode_result = gmaps.geocode(location)
     
@@ -39,6 +94,16 @@ def get_point(location):
         return None
 
 def is_physically_contained(country_polygon, sub_location):
+    """
+    Check if a given location is within a country polygon.
+
+    Args:
+        country_polygon (shapely.geometry.Polygon): The polygon representing the country.
+        sub_location (str): The location to check.
+
+    Returns:
+        bool: True if the location is within the country polygon, False otherwise.
+    """
     print(f"Checking if location '{sub_location}' is within the country")
     sub_location_point = get_point(sub_location)
 
@@ -50,6 +115,17 @@ def is_physically_contained(country_polygon, sub_location):
     return False
 
 def process_json_files(bucket_name, location, country_polygon):
+    """
+    Process JSON files in an S3 bucket to count the number of events per category and date.
+
+    Args:
+        bucket_name (str): The name of the S3 bucket containing the JSON files.
+        location (str): The location to filter the events by.
+        country_polygon (shapely.geometry.Polygon): The polygon representing the country.
+
+    Returns:
+        dict: A dictionary with event categories as keys and counts per date as values.
+    """
     print(f"Processing JSON files for location: {location} in bucket: {bucket_name}")
     result = defaultdict(lambda: defaultdict(int))
 
@@ -73,6 +149,16 @@ def process_json_files(bucket_name, location, country_polygon):
     return result
 
 def check_file_exists(bucket_name, location):
+    """
+    Check if a file for the given location exists in an S3 bucket.
+
+    Args:
+        bucket_name (str): The name of the S3 bucket.
+        location (str): The location to check.
+
+    Returns:
+        tuple: A tuple containing a boolean indicating if the file exists and the file name if it does.
+    """
     print(f"Checking if file exists for location '{location}' in bucket '{bucket_name}'")
     objects = s3.list_objects_v2(Bucket=bucket_name)
     for obj in objects.get('Contents', []):
@@ -83,6 +169,16 @@ def check_file_exists(bucket_name, location):
     return False, None
 
 def lambda_handler(event, context):
+    """
+    AWS Lambda function handler that processes a request for location-based statistics.
+
+    Args:
+        event (dict): The event data passed to the Lambda function.
+        context (object): The context object passed to the Lambda function.
+
+    Returns:
+        dict: The response containing the status code, body, and headers.
+    """
     bucket_name = 'classified-data-geoshield'
     output_bucket_name = 'statistics-geoshield'
     

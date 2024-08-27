@@ -18,6 +18,16 @@ secrets_client = boto3.client('secretsmanager')
 
 # Lambda handler function
 def lambda_handler(event, context):
+    """
+    AWS Lambda function handler to fetch Telegram messages and save them to S3.
+
+    Parameters:
+    event (dict): Input event data, which may include 'custom_uuid' and 'category'.
+    context (object): Lambda context object.
+
+    Returns:
+    dict: Response with HTTP status code and message.
+    """
     try:
         # Retrieve Telegram secrets from AWS Secrets Manager
         secret_name = "telegram_secrets"
@@ -32,7 +42,7 @@ def lambda_handler(event, context):
         api_hash = secret['api_hash']
         string_session = secret['string_session']
         
-        # Reading Configs
+        # Reading Configurations
         config = configparser.ConfigParser()
         config.read("config.ini")
         bucket_name = config['S3']['bucket_name']
@@ -142,6 +152,15 @@ def lambda_handler(event, context):
         }
 
 def extract_url(entities):
+    """
+    Extract URL from the message entities.
+
+    Parameters:
+    entities (list): List of entities in the message.
+
+    Returns:
+    str: Extracted URL or empty string if not found.
+    """
     # Iterate through entities to find the URL
     for entity in entities:
         if entity.get('_') == 'MessageEntityTextUrl':
@@ -149,15 +168,25 @@ def extract_url(entities):
     return ''  # Return empty string if URL not found    
 
 async def fetch_telegram_messages(client, channels):
+    """
+    Fetch messages from specified Telegram channels.
+
+    Parameters:
+    client (TelegramClient): Instance of the Telegram client.
+    channels (list): List of channel identifiers or URLs.
+
+    Returns:
+    list: List of messages fetched from Telegram.
+    """
     await client.start()  # Start the client
 
     print("Client Created")
 
     all_messages = []
 
-    # Calculate the timestamp for 2 days ago
-    two_days_ago = datetime.now() - timedelta(days=1)
-    two_days_ago_timestamp = int(two_days_ago.timestamp())
+    # Calculate the timestamp for 1 day ago (adjusted from original 2 days)
+    one_day_ago = datetime.now() - timedelta(days=1)
+    one_day_ago_timestamp = int(one_day_ago.timestamp())
 
     for user_input_channel in channels:
         if user_input_channel.isdigit():
@@ -185,7 +214,7 @@ async def fetch_telegram_messages(client, channels):
                 peer=my_channel,
                 q=search_query,
                 filter=message_filter,
-                min_date=two_days_ago_timestamp,
+                min_date=one_day_ago_timestamp,
                 max_date=datetime.now(), 
                 offset_id=offset_id,
                 add_offset=0,

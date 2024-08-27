@@ -17,9 +17,21 @@ config.read("config.ini")
 gdelt_api_url = config['GDELT']['api_url'] 
 
 def lambda_handler(event, context):
+    """
+    Lambda function handler for fetching GDELT articles based on a specified category or custom UUID, 
+    and sending the data to a destination Lambda function.
+
+    Parameters:
+    - event: The incoming event containing the 'category' and optionally 'custom_uuid'.
+    - context: Provides runtime information to the handler.
+
+    The function retrieves configuration data from S3 if a custom UUID is provided, fetches GDELT articles 
+    based on either the category or custom domains, processes the articles, and then invokes a destination Lambda function.
+    """
     try:
         category = event['category']
         print(f"Category '{category}' read from the event.")
+        
         # Check if custom_uuid exists in the event
         domains = None
         if 'custom_uuid' in event and event['custom_uuid']:
@@ -49,7 +61,7 @@ def lambda_handler(event, context):
         json_data = json.dumps(article_list)
         print("Article list converted to JSON.")
 
-        # Invoke destination Lambda function with custom_uuid if exists
+        # Invoke destination Lambda function with custom_uuid if it exists
         invoke_destination_lambda(json_data, category, custom_uuid if 'custom_uuid' in event else None)
         print("Destination Lambda function invoked.")
 
@@ -73,6 +85,17 @@ def lambda_handler(event, context):
         }
 
 def make_gdelt_request(config, category, domains=None):
+    """
+    Makes a request to the GDELT API to fetch articles based on the given category and optional domains.
+
+    Parameters:
+    - config: Configuration object containing GDELT API settings.
+    - category: The category of data being fetched.
+    - domains: Optional list of domains to include in the query.
+
+    Returns:
+    - A list of combined articles fetched from the GDELT API.
+    """
     try:
         query_list = json.loads(config['GDELT'][category])
         combined_articles = []
@@ -122,6 +145,15 @@ def make_gdelt_request(config, category, domains=None):
         return None
         
 def extract_articles(articles):
+    """
+    Extracts relevant article data, such as title, date, URL, and domain, from the GDELT articles.
+
+    Parameters:
+    - articles: List of articles returned from the GDELT API.
+
+    Returns:
+    - A list of dictionaries containing the extracted article information.
+    """
     try:
         extracted_articles = []
         today_date = datetime.now().strftime('%Y-%m-%d')
@@ -147,6 +179,17 @@ def extract_articles(articles):
         return []
 
 def invoke_destination_lambda(json_data, category, custom_uuid=None):
+    """
+    Invokes the destination Lambda function asynchronously with the provided JSON data, category, and optional custom UUID.
+
+    Parameters:
+    - json_data: The JSON data containing extracted articles.
+    - category: The category of data being processed.
+    - custom_uuid: An optional custom UUID for the data.
+
+    Returns:
+    - None
+    """
     try:
         # Prepare payload for the destination Lambda function
         payload = {
@@ -156,7 +199,7 @@ def invoke_destination_lambda(json_data, category, custom_uuid=None):
         if custom_uuid:
             payload['custom_uuid'] = custom_uuid
 
-        # Invoke the destination Lambda function
+        # Invoke the destination Lambda function asynchronously
         lambda_client.invoke(
             FunctionName='summarize_articles_gdelt',
             InvocationType='Event',  # Asynchronous invocation

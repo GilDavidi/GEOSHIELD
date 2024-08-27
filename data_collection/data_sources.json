@@ -1,0 +1,12 @@
+{
+    "sources": [
+        {
+            "name": "GDELT",
+            "lambda_name": "GDELT_data_collection"
+        },
+        {
+            "name": "Telegram",
+            "lambda_name": "telegram_data_collection"
+        }
+    ]
+}

@@ -2,35 +2,35 @@ from newspaper import Article
 import nltk
 import json
 import boto3
-import uuid  as uuid_module
+import uuid as uuid_module
 import requests
 
-
-# Download nltk data to /tmp
+# Download NLTK data to /tmp to make it available for Lambda
 nltk.data.path.append("/tmp")
 nltk.download("punkt", download_dir="/tmp")
 
 # AWS S3 client
 s3 = boto3.client('s3')
 
-# Load domains from JSON file
 def load_domains(filename):
+    """Load domain classifications from a JSON file."""
     with open(filename, 'r') as file:
         return json.load(file)
 
-# Classify domain
 def classify_domain(domain, domain_data):
-    if domain in domain_data["international"]:
+    """Classify the domain as 'International' or 'Local' based on the loaded data."""
+    if domain in domain_data.get("international", []):
         return "International"
-    for region, domains in domain_data["local"].items():
+    for region, domains in domain_data.get("local", {}).items():
         if domain in domains:
-            return "Local - " + region
+            return f"Local - {region}"
     return "Unknown"
 
 def get_article_text(url):
+    """Fetch and extract the summary of the article from the given URL."""
     try:
-        print("Downloading article from:", url)
-        response = requests.get(url, timeout=5)  # Set a timeout for the request
+        print(f"Downloading article from: {url}")
+        response = requests.get(url, timeout=5)
         if response.status_code == 200:
             article = Article(url)
             article.download()
@@ -38,45 +38,44 @@ def get_article_text(url):
             article.nlp()
             return article.summary
         else:
-            print("Failed to download article. Status code:", response.status_code)
+            print(f"Failed to download article. Status code: {response.status_code}")
             return None
     except Exception as e:
-        print("An error occurred while downloading article:", e)
-        return None  # Return None if summary extraction fails
+        print(f"An error occurred while downloading the article: {e}")
+        return None
 
 def lambda_handler(event, context):
     try:
-        # Load domain data
+        # Load domain data from the JSON file
         domain_data = load_domains("news_domains.json")
         
         # Extract the category and JSON data from the event
-        category = event['category']
-        json_data = json.loads(event['json_data'])
-        custom_uuid = event.get('custom_uuid')  # Check if custom_uuid exists
+        category = event.get('category', 'Unknown')
+        json_data = json.loads(event.get('json_data', '{}'))
+        custom_uuid = event.get('custom_uuid')
 
-        print("Processing articles for category:", category)
+        print(f"Processing articles for category: {category}")
 
-        # Initialize a list to store article summaries
+        # Store article summaries
         summaries = []
 
         # Iterate through each article in the JSON data
         for article_data in json_data:
-            title = article_data['title']
-            date = article_data['date']
-            url = article_data['url']
-            domain = article_data['domain']
+            title = article_data.get('title')
+            date = article_data.get('date')
+            url = article_data.get('url')
+            domain = article_data.get('domain')
 
-            print("Processing article:", title)
+            print(f"Processing article: {title}")
             
             # Classify the domain
             domain_classification = classify_domain(domain, domain_data)
 
             # Get the summary of the article
             summary = get_article_text(url)
-            
             unique_id = str(uuid_module.uuid4())
-                   
-            # If summary extraction was successful, add article info to summaries list
+            
+            # If summary extraction was successful, add the article info
             if summary:
                 article_info = {
                     'id': unique_id,
@@ -89,23 +88,27 @@ def lambda_handler(event, context):
                 }
                 summaries.append(article_info)
             else:
-                print("Failed to get summary for article:", title)
+                print(f"Failed to get summary for article: {title}")
 
         # Convert the list of article summaries to JSON format
         summaries_json = json.dumps(summaries)
 
-        # Adjust the file name to include the category and custom_uuid if exists
-        file_name = f'gdelt_articles_{str(uuid_module.uuid4())}.json' if not custom_uuid else f'gdelt_articles_{custom_uuid}.json'
-
-        print("Uploading data to S3...")
-
-        # Define the bucket name based on the presence of custom_uuid
-        bucket_name = 'raw-data-geoshield' if not custom_uuid else 'custom-raw-data-geoshield'
-
-        # Upload the JSON data to the S3 bucket with the adjusted file name
-        tags = [{'Key': 'Category', 'Value': category}]
-        s3.put_object(Bucket=bucket_name, Key=file_name, Body=summaries_json, Tagging='&'.join(['{}={}'.format(tag['Key'], tag['Value']) for tag in tags]))
+        # Adjust the file name based on the presence of custom_uuid
+        file_name = f'gdelt_articles_{custom_uuid}.json' if custom_uuid else f'gdelt_articles_{str(uuid_module.uuid4())}.json'
         
+        # Determine the bucket name based on whether custom_uuid exists
+        bucket_name = 'custom-raw-data-geoshield' if custom_uuid else 'raw-data-geoshield'
+
+        print(f"Uploading data to S3 bucket: {bucket_name} with file name: {file_name}")
+
+        # Upload the JSON data to S3 and tag with the category
+        s3.put_object(
+            Bucket=bucket_name,
+            Key=file_name,
+            Body=summaries_json,
+            Tagging=f"Category={category}"
+        )
+
         print("Data uploaded successfully.")
 
         return {
@@ -113,7 +116,7 @@ def lambda_handler(event, context):
             "body": json.dumps({"message": "Article summaries saved to S3"})
         }
     except Exception as e:
-        print("An error occurred:", e)
+        print(f"An error occurred: {e}")
         return {
             "statusCode": 500,
             "body": json.dumps({"error": str(e)})

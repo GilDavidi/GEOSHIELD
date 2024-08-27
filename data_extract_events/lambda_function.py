@@ -5,24 +5,40 @@ from datetime import datetime
 import requests
 import traceback
 
-# Define the correct endpoint for AI21 Studio's API
-endpoint = "https://api.ai21.com/studio/v1/j2-ultra/complete"
-
 # AWS Secrets Manager client
 secrets_client = boto3.client('secretsmanager')
 
-secret_name = "ai_api_secrets"
+# Secrets Manager configuration
+endpoint_secret_name = "ai_api_endpoint"
+api_secret_name = "ai_api_secrets"
 region_name = "eu-west-1"
 
+# Fetching the endpoint from AWS Secrets Manager
 get_secret_value_response = secrets_client.get_secret_value(
-    SecretId=secret_name
+    SecretId=endpoint_secret_name
+)
+secret = json.loads(get_secret_value_response['SecretString'])
+endpoint = secret['ai_endpoint']
+
+# Fetching the API key from AWS Secrets Manager
+get_secret_value_response = secrets_client.get_secret_value(
+    SecretId=api_secret_name
 )
 secret = json.loads(get_secret_value_response['SecretString'])
 api_key = secret['api_key']
 
-
 def generate_text(message, question):
-    prompt =  message + question
+    """
+    Generates a response from the AI21 API based on the provided message and question.
+
+    Args:
+        message (str): The message to be analyzed.
+        question (str): The question to be asked to the AI21 API.
+
+    Returns:
+        str: The generated text from the AI21 API response.
+    """
+    prompt = message + question
     # Request headers
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -55,36 +71,55 @@ def generate_text(message, question):
     return generated_text
 
 def process_message(message, category):
+    """
+    Processes a single message to extract current events relevant to the specified category.
 
+    Args:
+        message (dict): The message containing the event details.
+        category (str): The category of the event to be identified.
+
+    Returns:
+        dict: The message with the added 'event_breakdown' key.
+    """
     if message["message"]:
         print("Processing message:", message["message"])
         
         event_breakdown = None
         
         event_breakdown_question = f"Identify and list only current events of {category} that are reported in text that can be placed on a map (ie, have a specific location). Each event should be formatted as a short report in English. Note the target event - a news push that reports an event that is happening in the current time frame and belongs to to the category {category}, and not a past event. If no relevant events were found, return 'null'."
-        # Define maximum number of attempts to find a valid location
+        # Define maximum number of attempts to find a valid event breakdown
         max_attempts = 3
         attempt_count = 0
         
         while attempt_count < max_attempts:
             event_breakdown = generate_text(message["message"], event_breakdown_question)
             
-            # Check if the location is meaningful, not empty, and does not contain specific words
+            # Check if the event_breakdown is meaningful, not empty
             if event_breakdown != "":
                 message["event_breakdown"] = str(event_breakdown)
                 print("event_breakdown found:", event_breakdown)
-                break  # Exit loop if a valid location is found
+                break  # Exit loop if a valid event breakdown is found
             else:
                 attempt_count += 1  # Increment attempt count
                 
-        # If no valid location is found after maximum attempts, default to 'null'
+        # If no valid event_breakdown is found after maximum attempts, default to 'null'
         if attempt_count == max_attempts:
             message["event_breakdown"] = "null"
             print("No valid event_breakdown found for the message. Message dropped.")
             
     return message
-    
+
 def compare_first_two_words(file1, file2):
+    """
+    Compares the first two words of two file names to check for a match.
+
+    Args:
+        file1 (str): The first file name.
+        file2 (str): The second file name.
+
+    Returns:
+        bool: True if the first two words of both file names match, otherwise False.
+    """
     # Split the file names by underscore
     words1 = file1.split('_')
     words2 = file2.split('_')
@@ -92,8 +127,16 @@ def compare_first_two_words(file1, file2):
     # Compare the first two words
     return words1[0] == words2[0] and words1[1] == words2[1]
 
-
 def remove_duplicate_urls(messages):
+    """
+    Removes duplicate messages based on URL from a list of messages.
+
+    Args:
+        messages (list): A list of message dictionaries, each containing a 'url' key.
+
+    Returns:
+        list: A list of messages with duplicates removed.
+    """
     unique_urls = set()
     unique_messages = []
     for message in messages:
@@ -102,15 +145,28 @@ def remove_duplicate_urls(messages):
             unique_urls.add(url)
             unique_messages.append(message)
     return unique_messages
-    
 
 def lambda_handler(event, context):
+    """
+    AWS Lambda function handler that processes S3 events to extract and process messages.
+
+    Args:
+        event (dict): The event data from the triggering source.
+        context (object): The context object providing information about the invocation, function, and execution environment.
+
+    Returns:
+        dict: A response indicating the status of the operation.
+    """
     try:
+        # Initialize Boto3 client for S3
         s3 = boto3.client('s3')
+        
+        # Determine bucket name based on event source
         if event['bucket_name'] == 'raw-data-geoshield':
             bucket_name = 'classified-data-geoshield'
         else:
             bucket_name = 'custom-classified-data-geoshield'
+        
         category = event['category']
         file_name = event['file_name']
         messages = event['messages']

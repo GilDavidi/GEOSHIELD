@@ -3,13 +3,27 @@ import json
 import requests
 import configparser
 
+# Initialize the Lambda client for invoking other Lambda functions
 lambda_client = boto3.client('lambda')
 
-# Read configuration
+# Read configuration from config.ini
 config = configparser.ConfigParser()
 config.read("config.ini")
 
 def classify_and_invoke(messages, file_name, category, bucket_name):
+    """
+    Classify messages using an external model service and invoke another Lambda function
+    with the classified messages.
+
+    Parameters:
+    - messages (list): List of message dictionaries to classify.
+    - file_name (str): The name of the file from which the messages were derived.
+    - category (str): The category to match against the predicted category from the model.
+    - bucket_name (str): The name of the S3 bucket where the file is stored.
+
+    Returns:
+    - dict: Result message indicating the status of the operation.
+    """
     try:
         # Define the endpoint of the model service
         model_endpoint = config['EC2']['URL']
@@ -35,15 +49,15 @@ def classify_and_invoke(messages, file_name, category, bucket_name):
                     predicted_category = model_output.get("Predicted", None)
                     score = model_output.get("Score", None)
 
-                # Check if predicted category matches the file category and score is above 0.4
-                if predicted_category == category and score is not None and score >= 0.4:
-                    # Add classification and score to the original message
-                    message['classification'] = predicted_category
-                    message['score'] = score
-                else:
-                    # If predicted category does not match or score is under 0.6, skip inserting it to the message
-                    message['classification'] = None
-                    message['score'] = None
+                    # Check if predicted category matches the file category and score is above 0.4
+                    if predicted_category == category and score is not None and score >= 0.4:
+                        # Add classification and score to the original message
+                        message['classification'] = predicted_category
+                        message['score'] = score
+                    else:
+                        # If predicted category does not match or score is under 0.6, skip inserting it to the message
+                        message['classification'] = None
+                        message['score'] = None
 
         # Prepare payload for the next Lambda function
         payload = {
@@ -67,6 +81,16 @@ def classify_and_invoke(messages, file_name, category, bucket_name):
         return {"error": str(e)}
 
 def lambda_handler(event, context):
+    """
+    Lambda function handler to process the event and classify messages.
+
+    Parameters:
+    - event (dict): The event data containing file_name, messages, category, and bucket_name.
+    - context (object): The context object provided by AWS Lambda.
+
+    Returns:
+    - dict: Response object containing status code and result message.
+    """
     try:
         # Extracting object key and messages from the event
         file_name = event['file_name']

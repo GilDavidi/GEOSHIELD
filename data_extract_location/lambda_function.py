@@ -5,22 +5,38 @@ import boto3
 import traceback
 from botocore.exceptions import ClientError
 
-# Define the correct endpoint for AI21 Studio's API
-endpoint = "https://api.ai21.com/studio/v1/j2-ultra/complete"
-
 # AWS Secrets Manager client
-secrets_client = boto3.client('secretsmanager')
+secrets_client = boto3.client('secretsmanager', region_name='eu-west-1')
 
-secret_name = "ai_api_secrets"
-region_name = "eu-west-1"
+# Retrieve secrets from AWS Secrets Manager
+api_secret_name = "ai_api_secrets"
+endpoint_secret_name = "ai_api_endpoint"
 
-get_secret_value_response = secrets_client.get_secret_value(
-    SecretId=secret_name
+# Fetch API key
+get_api_secret_value_response = secrets_client.get_secret_value(
+    SecretId=api_secret_name
 )
-secret = json.loads(get_secret_value_response['SecretString'])
-api_key = secret['api_key']
+api_secret = json.loads(get_api_secret_value_response['SecretString'])
+api_key = api_secret['api_key']
+
+# Fetch API endpoint
+get_endpoint_secret_value_response = secrets_client.get_secret_value(
+    SecretId=endpoint_secret_name
+)
+endpoint_secret = json.loads(get_endpoint_secret_value_response['SecretString'])
+endpoint = endpoint_secret['ai_endpoint']
 
 def generate_text(message, question):
+    """
+    Generates a response from the AI21 API based on the provided message and question.
+
+    Args:
+        message (str): The message to be analyzed.
+        question (str): The question to be asked to the AI21 API.
+
+    Returns:
+        str: The extracted location from the AI21 API response.
+    """
     prompt = message + question
     # Request headers
     headers = {
@@ -66,8 +82,15 @@ def generate_text(message, question):
     return location
 
 def process_message(message):
-    
-    
+    """
+    Processes a single message to extract the main location of the event.
+
+    Args:
+        message (dict): The message containing the event details.
+
+    Returns:
+        dict: The message with the added 'location' key.
+    """
     if message["message"]:
         print("Processing message:", message["message"])
         
@@ -96,10 +119,18 @@ def process_message(message):
             
     return message
 
-
 def lambda_handler(event, context):
-    try:
+    """
+    AWS Lambda function handler that processes S3 events to extract location information from messages.
 
+    Args:
+        event (dict): The event data from the triggering source.
+        context (object): The context object providing information about the invocation, function, and execution environment.
+
+    Returns:
+        dict: A response indicating the status of the operation.
+    """
+    try:
         # Extracting S3 bucket name and object key from the SQS message
         message_body = json.loads(event['Records'][0]['body'])
         inner_message_body = json.loads(message_body['Message'])
